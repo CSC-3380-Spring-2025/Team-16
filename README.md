@@ -43,7 +43,7 @@ npm -v
 `If you don't already have python`
 Install Python version 3.10.7
 `If you already have python`
-Create a virtual environment
+Create a virtual environment (I suggest you do this in a folder you remember/in the folder you're going to put the app into)
 ```sh
 python -m venv [desired\virtual\environment\path]
 ~OR, IF CURRENTLY IN PROJECT PATH~
