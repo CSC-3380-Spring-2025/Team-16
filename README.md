@@ -66,10 +66,28 @@ typescript: ^5
 Next, navigate to the desired install directory, and create the app from this github
 ```sh
 npx create-next-app@15.1.6 --example "https://github.com/CSC-3380-Spring-2025/Team-16" schedule-lsu
+```
+
+Next, activate your python virtual environment. The command should look something like...
+```sh
+(your path to your venv here)\Scripts\activate.bat
+```
+
+Change directory to the project directory
+```sh
 cd schedule-lsu
 ```
 
+Run the following command to start the dev server
+```sh
+npm run dev
+```
+Once it has run, you can navigate to the site by going to localhost:3000
 
+When you're finished, use Ctrl+C to quit.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Describe how the commands and process to launch the project on the main branch in such a way that anyone working on the project knows how to check the affects of any code they add.
 
