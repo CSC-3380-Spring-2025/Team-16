@@ -28,7 +28,7 @@ export default function Home() {
               <Link href="/upload"><li className="mb-2 subsection-container">Transcript Upload Page.</li></Link>
               <Link href="/myschedule"><li className="mb-2 subsection-container">Schedule Viewer.</li></Link>
               <Link href="/user"><li className="mb-2 subsection-container">User Page.</li></Link>
-              <Link href="/dashboard"><li className="mb-2 subsection-container">Dashboard.</li></Link>
+              <Link href="/dashboard"><li className="mb-2 subsection-container">Dashboard lol.</li></Link>
             </ol>
           </div>
           
