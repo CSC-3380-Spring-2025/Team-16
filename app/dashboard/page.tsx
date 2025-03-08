@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // For navigation
 
 export default function Page() {
     const [roadmap, setRoadmap] = useState([
@@ -14,23 +15,20 @@ export default function Page() {
         graduationYear: "2025",
     });
 
-    const [uploadedTranscript, setUploadedTranscript] = useState(null);
     const courseSuggestions = [
         { course: "CS 4101", reason: "Advanced Programming" },
         { course: "MATH 3001", reason: "Mathematical Foundations" },
         { course: "PHYS 1001", reason: "Basic Physics for CS" },
     ];
 
-    const handleUpload = (event) => {
-        setUploadedTranscript(event.target.files[0]);
+    const router = useRouter(); // Use the router to navigate to another page
+
+    const handleNavigate = () => {
+        router.push("http://localhost:3000/upload"); // Navigate to the upload page
     };
 
     const removeCourse = (index) => {
         setRoadmap(roadmap.filter((_, i) => i !== index));
-    };
-
-    const savePlan = () => {
-        alert("Schedule saved!");
     };
 
     return (
@@ -82,20 +80,14 @@ export default function Page() {
             {/* Transcript Upload */}
             <div className="mt-6">
                 <h2 className="text-xl">Upload Transcript</h2>
-                <input type="file" onChange={handleUpload} className="mt-2" />
-                {uploadedTranscript && <p className="text-green-600 mt-2">Uploaded: {uploadedTranscript.name}</p>}
-            </div>
-
-            {/* Save & Export */}
-            <div className="mt-6">
-                <button
-                    onClick={savePlan}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                {/* Button to navigate to the upload page */}
+                <button 
+                    onClick={handleNavigate} 
+                    className="px-4 py-2 bg-blue-500 text-white rounded mt-2"
                 >
-                    Save Schedule
+                    Upload Your Transcript
                 </button>
             </div>
         </div>
     );
 }
-
