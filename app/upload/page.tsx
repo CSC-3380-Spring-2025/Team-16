@@ -1,4 +1,4 @@
-'use client'; // Add this line at the very top
+'use client'; 
 
 import { useState } from 'react';
 
@@ -41,10 +41,12 @@ const UploadPage = () => {
       setError('Error uploading file');
     } finally {
       setLoading(false);
+
     }
   };
 
   return (
+
     <div className="grid grid-rows-[1fr_4fr_1fr] items-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         {/* Header Section */}
