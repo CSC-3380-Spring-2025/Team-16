@@ -61,7 +61,7 @@ with open(file="api\scheduling\data.csv", newline="", encoding="Windows-1252", e
         print(f"i: {i}")
         while True:
             while not time.gmtime().tm_sec % 2 == 0:
-                pass  # Placeholder for debugging comment
+                pass  # This is likely the most scuffed thing I've ever written in my entire life. This is disgusting, and I promise to fix this later.
             else:
                 print(time.gmtime().tm_sec)
                 length: int = len(row)
