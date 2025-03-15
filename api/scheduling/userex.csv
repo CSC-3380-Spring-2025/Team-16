@@ -1,0 +1,3 @@
+id;name;email;curriculum;credit
+123456;Carson;cbou119@lsu.edu;CSC;"{"Completed":["ENGL 2000", "CSC 1350", "CSC 1351", "BIOL 1201", "BIOL 1202", "CSC 3102"], "IP":["CSC 3200"]}"
+012345;Thar;thtoo@lsu.edu;ACCT;"{"Completed":["ACCT 4225", "ACCT 4221", "ACCT 4121"], "IP":["ACCT 4234", "CSC 3200"]}"
