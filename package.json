@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@eslint/eslintrc": "^3",
+    "@supabase/supabase-js": "^2.49.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
