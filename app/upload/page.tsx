@@ -33,7 +33,7 @@ const UploadPage = () => {
       const data = await response.json();
 
       if (response.ok && data && !data.error) {
-        setTableData(data); // Set the returned data
+        setTableData(data); 
       } else {
         setError(data.error || 'Error processing file');
       }
@@ -46,33 +46,32 @@ const UploadPage = () => {
   };
 
   return (
-
-    <div className="grid grid-rows-[1fr_4fr_1fr] items-center justify-items-center min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div className="grid grid-rows-[auto_1fr] items-center justify-items-center min-h-screen p-4 gap-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-4 items-center sm:items-start w-full">
         {/* Header Section */}
-        <div className="flex flex-col items-center sm:flex-row gap-8 mb-16">
-          <div className="flex flex-col items-center sm:flex-row" style={{ margin: 'auto' }}>
+        <div className="flex flex-col items-center sm:flex-row gap-2 mb-4">
+          <div className="flex flex-col items-center sm:flex-row">
             <img
               src="/logo.svg"
               alt="ScheduleLSU logo"
-              width={100}
-              height={100}
+              width={60}
+              height={60}
               style={{ transform: 'rotate(90deg)' }}
-              className="mb-4 sm:mb-0"
+              className="mb-1 sm:mb-0"
             />
             <div className="flex justify-center items-center">
-              <p className="text-xl font-semibold">ScheduleLSU</p>
+              <p className="text-lg font-semibold">ScheduleLSU</p>
             </div>
           </div>
         </div>
-
+  
         {/* File Upload Section */}
-        <div className="font-[family-name:var(--font-geist-mono)] text-center mb-16">
-          <p className="text-lg mb-4 font-[family-name:var(--font-geist-mono)]">Upload Your PDF</p>
+        <div className="font-[family-name:var(--font-geist-mono)] text-center mb-4">
+          <p className="text-md mb-2 font-[family-name:var(--font-geist-mono)]">Upload Your PDF</p>
           <input
             type="file"
             onChange={handleFileChange}
-            className="text-input-field mb-4 p-2 border border-gray-300 rounded-md"
+            className="text-input-field mb-2 p-2 border border-gray-300 rounded-md"
           />
           <button
             onClick={handleUpload}
@@ -81,9 +80,9 @@ const UploadPage = () => {
           >
             {loading ? 'Uploading...' : 'Upload'}
           </button>
-          {error && <p className="text-red-500 mt-4">{error}</p>}
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
-
+  
         {/* Table Display */}
         {tableData.length > 0 && (
           <div className="overflow-x-auto w-full">
