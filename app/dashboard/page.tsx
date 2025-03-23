@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // For navigation
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image"; 
 
 export default function Page() {
     const [roadmap, setRoadmap] = useState([
@@ -15,25 +17,80 @@ export default function Page() {
         graduationYear: "2025",
     });
 
-    const courseSuggestions = [
+    const courseSuggestionsData = [
         { course: "CS 4101", reason: "Advanced Programming" },
         { course: "MATH 3001", reason: "Mathematical Foundations" },
         { course: "PHYS 1001", reason: "Basic Physics for CS" },
     ];
 
-    const router = useRouter(); // Use the router to navigate to another page
+    const [courseSuggestions, setCourseSuggestions] = useState(courseSuggestionsData);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [suggestionSearchTerm, setSuggestionSearchTerm] = useState("");
+    const [darkMode, setDarkMode] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check user's system preference for dark mode
+        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setDarkMode(prefersDarkMode);
+    }, []);
 
     const handleNavigate = () => {
-        router.push("http://localhost:3000/upload"); // Navigate to the upload page
+        router.push("http://localhost:3000/upload");
     };
 
     const removeCourse = (index) => {
-        setRoadmap(roadmap.filter((_, i) => i !== index));
+        const confirmation = window.confirm("Are you sure you want to remove this course?");
+        if (confirmation) {
+            setRoadmap(roadmap.filter((_, i) => i !== index));
+        }
     };
 
+    const addCourse = (course, status) => {
+        setRoadmap([...roadmap, { course, status }]);
+    };
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const handleSuggestionSearch = (e) => {
+        setSuggestionSearchTerm(e.target.value);
+    };
+
+    const filteredCourses = roadmap.filter(course =>
+        course.course.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const filteredSuggestions = courseSuggestions.filter(suggestion =>
+        suggestion.course.toLowerCase().includes(suggestionSearchTerm.toLowerCase())
+    );
+
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className={`${darkMode ? "bg-black text-white" : "bg-white text-black"} p-6`}>
+            {/* Logo and Dashboard Header */}
+            <div className="flex items-center gap-0">
+                <Image
+                    src="/logo.svg"
+                    alt="ScheduleLSU logo"
+                    width={75}
+                    height={75}
+                    style={{ 
+                        transform: "rotate(90deg)",
+                        filter: darkMode ? "invert(1)" : "invert(0)" // Invert colors for dark mode
+                    }}
+                    priority
+                />
+                <h1 className="text-2xl font-bold">ScheduleLSU Dashboard</h1>
+            </div>
+
+            {/* Dark Mode Toggle */}
+            <button 
+                onClick={() => setDarkMode(!darkMode)} 
+                className="mt-4 px-3 py-1 bg-gray-500 text-white rounded"
+            >
+                Toggle {darkMode ? "Light" : "Dark"} Mode
+            </button>
 
             {/* Student Info Panel */}
             <div className="mt-6">
@@ -48,8 +105,15 @@ export default function Page() {
             {/* Course Plan */}
             <div className="mt-6">
                 <h2 className="text-xl">Your Course Roadmap</h2>
+                <input
+                    type="text"
+                    placeholder="Search courses"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className={`mt-2 p-2 border rounded ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
+                />
                 <ul className="mt-2">
-                    {roadmap.map((item, index) => (
+                    {filteredCourses.map((item, index) => (
                         <li key={index} className="p-2 border-b flex justify-between">
                             <span>
                                 <strong>{item.course}</strong> - {item.status}
@@ -68,8 +132,15 @@ export default function Page() {
             {/* Course Suggestions */}
             <div className="mt-6">
                 <h2 className="text-xl">Course Suggestions</h2>
+                <input
+                    type="text"
+                    placeholder="Search suggestions"
+                    value={suggestionSearchTerm}
+                    onChange={handleSuggestionSearch}
+                    className={`mt-2 p-2 border rounded ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
+                />
                 <ul className="mt-2">
-                    {courseSuggestions.map((suggestion, index) => (
+                    {filteredSuggestions.map((suggestion, index) => (
                         <li key={index} className="p-2 border-b">
                             <strong>{suggestion.course}</strong> - {suggestion.reason}
                         </li>
@@ -80,7 +151,6 @@ export default function Page() {
             {/* Transcript Upload */}
             <div className="mt-6">
                 <h2 className="text-xl">Upload Transcript</h2>
-                {/* Button to navigate to the upload page */}
                 <button 
                     onClick={handleNavigate} 
                     className="px-4 py-2 bg-blue-500 text-white rounded mt-2"
