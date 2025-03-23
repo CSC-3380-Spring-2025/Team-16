@@ -49,7 +49,7 @@ export default function Page() {
               name="emailField"
               className="text-input-field mb-4"
               placeholder="studentID@lsu.edu"
-              maxLength="50"
+              maxLength={50}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
