@@ -6,12 +6,16 @@ class webSpider(scrapy.Spider):
     custom_settings = {
         'FEED_FORMAT': 'csv',
         'FEED_URI': 'course_catalog.csv',
-        'FEED_EXPORT_FIELDS': ['course title', 'Credit hours', 'course ID', 'class code', 'preReqs'],
+        'FEED_EXPORT_FIELDS': ['ID','course title', 'Credit hours', 'course ID', 'class code', 'preReqs'],
     }
 
     start_urls = [
         'https://catalog.lsu.edu/content.php?catoid=29&navoid=2740', #the starting page of the course catalog webcrawler
     ]
+    def __init__(self, *args, **kwargs):
+        super(webSpider, self).__init__(*args, **kwargs)
+        self.counter = 0  # Initialize the counter to 0
+
     def parse(self, response):
         for tr in response.xpath('//tr'):
             course = tr.xpath('.//a/text()').get()
@@ -28,25 +32,39 @@ class webSpider(scrapy.Spider):
             yield scrapy.Request(nextPage, callback = self.parse)
 
     def parse_course(self, response):
+        self.counter += 1
         course = response.css('title::text').get()
         CourseReq = response.xpath('//td[contains(@class, "block_content")]//em//text()').getall()
+
         if course:
-            course: str = course.strip()
-            creditHoursChar:str = course[-27] if len(course) >= 2 else None
-            courseID:str = course.split(' ')[0] if len(course) >= 12 else None #arbritarily chose 12 to ensure that whatever string being parsed is long enough to reasonably be thought of as a course, else return a null value
-            classCodeChar: str = course.split(' ')[1] if len(course) >= 12 else None
+            course = course.strip()
+            creditHoursChar = course[-27] if len(course) >= 2 else None
+            courseID = course.split(' ')[0] if len(course) >= 12 else None
+            classCodeChar = course.split(' ')[1] if len(course) >= 12 else None
+
             if creditHoursChar and creditHoursChar.isdigit() and classCodeChar and classCodeChar.isdigit():
-                creditHours: int = int(creditHoursChar)
-                classCode: int = int(classCodeChar)
+                creditHours = int(creditHoursChar)
+                classCode = int(classCodeChar)
             else:
                 creditHours = 1
                 classCode = None
+
         CourseReq = [req.strip() for req in CourseReq if req.strip()]
+
+        # Find the index of "Prereq.:" in the CourseReq list
+        try:
+            prereq_index = CourseReq.index("Prereq.:")
+            # Slice the list to keep only the elements after "Prereq.:"
+            CourseReq = CourseReq[prereq_index + 1:]
+        except ValueError:
+            # If "Prereq.:" is not found, keep the original list
+            pass
+
         yield {
+            'ID': self.counter,
             'course title': course,
             'Credit hours': creditHours,
             'course ID': courseID,
             'class code': classCode,
             'preReqs': CourseReq if CourseReq else None
         }
-

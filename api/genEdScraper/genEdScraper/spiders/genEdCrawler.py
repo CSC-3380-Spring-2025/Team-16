@@ -18,7 +18,12 @@ class WebSpider(scrapy.Spider):
         'FEED_EXPORT_FIELDS': ['Category', 'course title', 'Credit hours', 'course ID', 'class code'],
     }
 
+    def __init__(self, *args, **kwargs):
+        super(WebSpider, self).__init__(*args, **kwargs)
+        self.counter = 0  # Initialize the counter to 0
+
     def parse(self, response):
+        self.counter += 1
         for span in response.xpath('//span'):
             category:str = response.css('title::text').get()
             category:str = category.strip()
@@ -42,6 +47,7 @@ class WebSpider(scrapy.Spider):
                     GeneralEd = None
                     GeneralEdID = None
                 yield {
+                    'ID': self.counter,
                     'Category': category,
                     'course title': GeneralEd,
                     'Credit hours': creditHours,
