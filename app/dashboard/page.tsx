@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import "@/app/global/styles/globals.css";
 
-// Profile and course data types
 interface Course {
   course: string;
   status: string;
@@ -30,9 +29,12 @@ export default function Page() {
   });
 
   const [date, setDate] = useState(new Date());
+  const [darkMode, setDarkMode] = useState(false);
+  const router = useRouter();
 
-  // Update time every second
   useEffect(() => {
+    const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDarkMode(prefersDarkMode);
     const timer = setInterval(() => {
       setDate(new Date());
     }, 1000);
@@ -48,21 +50,11 @@ export default function Page() {
   const [courseSuggestions, setCourseSuggestions] = useState(courseSuggestionsData);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestionSearchTerm, setSuggestionSearchTerm] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
-  const router = useRouter();
 
-  // Detect dark mode preference from system settings
-  useEffect(() => {
-    const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDarkMode(prefersDarkMode);
-  }, []);
-
-  // Handle navigation to different pages
   const handleNavigate = (url: string): void => {
     router.push(url);
   };
 
-  // Remove course from course roadmap
   const removeCourse = (index: number): void => {
     const confirmation = window.confirm("Are you sure you want to remove this course?");
     if (confirmation) {
@@ -70,116 +62,61 @@ export default function Page() {
     }
   };
 
-  // Handles course search input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchTerm(e.target.value);
   };
 
-  // Handles suggestion search input
   const handleSuggestionSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSuggestionSearchTerm(e.target.value);
   };
 
-  // Filter courses based on search term
   const filteredCourses = roadmap.filter(course =>
     course.course.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Filter course suggestions based on search term
   const filteredSuggestions = courseSuggestions.filter(suggestion =>
     suggestion.course.toLowerCase().includes(suggestionSearchTerm.toLowerCase())
   );
 
-  // Random emojis for profile picture
-  const emojiList = ["😀", "😁", "😎", "😊", "🙃", "😜", "😇", "🥳"];
-  const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
-
   return (
-    <div className={`${darkMode ? "bg-black text-white" : "bg-white text-black"} p-6 relative`}>
-      <div className="flex items-center gap-0">
-        <Image
-          src="/logo.svg"
-          alt="ScheduleLSU logo"
-          width={75}
-          height={75}
-          style={{
-            transform: "rotate(90deg)",
-            filter: darkMode ? "invert(1)" : "invert(0)"
-          }}
-          priority
-        />
-        <h1 className="text-2xl font-bold">ScheduleLSU Dashboard</h1>
+    <div className={`${darkMode ? "bg-black text-white" : "bg-white text-black"} min-h-screen flex flex-col items-center relative font-[family-name:var(--font-geist-mono)]`}>
+      <div className="h-16 w-full"></div>
+
+      <div className="w-full max-w-5xl px-6 pt-0 pb-8 relative">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold pl-0">Welcome, User!</h1>
+          
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`fixed top-20 right-6 w-6 h-6 flex items-center justify-center rounded-full transition-all ease-in-out duration-200 hover:scale-110 z-40 ${
+              darkMode ? "bg-white text-black" : "bg-black text-white"
+            } text-sm`}
+          >
+            {darkMode ? "🌞" : "🌙"}
+          </button>
+        </div>
       </div>
 
-      {/* Layout for the 4 boxes */}
-      <div className="grid grid-cols-2 grid-rows-2 gap-6 mt-6" style={{ gridTemplateRows: '1fr 1fr', gridTemplateColumns: '1fr 1fr' }}>
-
-        {/* Profile Box */}
-        <div className="border p-4 flex flex-col justify-between">
-          {/* Profile information and emoji circle */}
-          <div className="flex flex-col items-center justify-center flex-grow text-center">
-            {/* Circle profile with random emojis */}
-            <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-6xl mb-4">
-              {randomEmoji}
-            </div>
-
-            {/* Profile Info */}
-            <p className="text-4xl font-semibold">Welcome {profileInfo.name}!</p>
-            <p className="mt-2 text-xl"><strong>Major:</strong> {profileInfo.major}</p>
-            <p className="text-xl"><strong>Graduation Year:</strong> {profileInfo.graduationYear}</p>
-          </div>
-
-          {/* "My Profile" Button */}
-          <div className="w-full flex justify-start mt-auto">
-            <button
-              onClick={() => handleNavigate('/user')}
-              className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all ${darkMode ? "border-2 border-white" : "border-2 border-black"}`}
-            >
-              My Profile
-            </button>
-          </div>
-        </div>
-
-        {/* Calendar Box */}
-        <div className="border p-4">
-          <p className="text-2xl"><strong>{date.toLocaleTimeString()}</strong></p>
-          <p className="mt-2 text-2xl"><strong>{date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong></p>
-
-          <div className="grid grid-cols-7 gap-1 text-center mt-4">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-              <div key={day} className="font-bold">{day}</div>
-            ))}
-            {Array.from({ length: new Date(date.getFullYear(), date.getMonth(), 1).getDay() })
-              .map((_, i) => <div key={`empty-${i}`}></div>)}
-            {Array.from({ length: new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() })
-              .map((_, i) => (
-                <div key={i} className={`p-2 ${i + 1 === date.getDate() ? "bg-blue-500 text-white rounded" : ""}`}>
-                  {i + 1}
-                </div>
-              ))}
-          </div>
-        </div>
-
-        {/* Course Roadmap Box */}
-        <div className="border p-4 flex flex-col justify-between">
-          <div>
-            <h2 className="text-xl">Your Course Roadmap</h2>
+      <div className="w-full max-w-5xl px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-5 mt-4">
+        <div className="lg:col-span-2 flex flex-col gap-5">
+          <div className={`border-2 ${darkMode ? "border-gray-700" : "border-gray-200"} p-4 rounded-lg shadow-sm`} style={{ height: '320px' }}>
+            <h2 className="text-xl mb-3">Your Course Roadmap</h2>
             <input
               type="text"
               placeholder="Search courses"
               value={searchTerm}
               onChange={handleSearch}
-              className={`mt-2 p-2 border rounded w-full ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
+              className={`w-full p-2 border rounded mb-3 text-md ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}
             />
-            <ul className="mt-2">
+            <ul className="space-y-2 overflow-y-auto" style={{ height: 'calc(320px - 120px)' }}>
               {filteredCourses.map((item, index) => (
-                <li key={index} className="p-2 border-b flex justify-between">
-                  <span>
+                <li key={index} className="flex justify-between items-center p-2 border-b">
+                  <span className="text-md">
                     <strong>{item.course}</strong> - {item.status}
                   </span>
                   <button
                     onClick={() => removeCourse(index)}
-                    className="ml-4 text-red-500"
+                    className="text-red-500 text-sm hover:text-red-700"
                   >
                     Remove
                   </button>
@@ -188,59 +125,58 @@ export default function Page() {
             </ul>
           </div>
 
-          {/* My Schedule Button */}
-          <div className="mt-auto flex justify-start">
-            <button
-              onClick={() => handleNavigate('/myschedule')}
-              className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all ${darkMode ? "border-2 border-white" : "border-2 border-black"}`}
-            >
-              My Schedule
-            </button>
+          <div className={`border-2 ${darkMode ? "border-gray-700" : "border-gray-200"} p-4 rounded-lg shadow-sm`} style={{ height: '320px' }}>
+            <h2 className="text-xl mb-3">Course Suggestions</h2>
+            <input
+              type="text"
+              placeholder="Search suggestions"
+              value={suggestionSearchTerm}
+              onChange={handleSuggestionSearch}
+              className={`w-full p-2 border rounded mb-3 text-md ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}
+            />
+            <ul className="space-y-2 overflow-y-auto" style={{ height: 'calc(320px - 120px)' }}>
+              {filteredSuggestions.map((item, index) => (
+                <li key={index} className="p-2 border-b text-md">
+                  <strong>{item.course}</strong> - {item.reason}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Course Suggestions Box */}
-        <div className="border p-4 flex flex-col justify-between">
-          <h2 className="text-xl">Course Suggestions</h2>
-          <input
-            type="text"
-            placeholder="Search suggestions"
-            value={suggestionSearchTerm}
-            onChange={handleSuggestionSearch}
-            className={`mt-2 p-2 border rounded w-full ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
-          />
-          <ul className="mt-2">
-            {filteredSuggestions.map((suggestion, index) => (
-              <li key={index} className="p-2 border-b">
-                <strong>{suggestion.course}</strong> - {suggestion.reason}
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col gap-5">
+          <div className={`border-2 ${darkMode ? "border-gray-700" : "border-gray-200"} p-4 rounded-lg shadow-sm`} style={{ height: '320px' }}>
+            <h2 className="text-lg mb-2">Calendar</h2>
+            <p className="text-md mb-1"><strong>{date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong></p>
+            <p className="text-md mb-3"><strong>{date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></p>
+            <div className="grid grid-cols-7 gap-1 text-center text-xs">
+              {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                <div key={`${day}-${index}`} className="font-bold py-1">{day}</div>
+              ))}
+              {Array.from({ length: new Date(date.getFullYear(), date.getMonth(), 1).getDay() })
+                .map((_, i) => <div key={`empty-${i}`} className="py-1"></div>)}
+              {Array.from({ length: new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() })
+                .map((_, i) => (
+                  <div key={i} className={`py-1 ${i + 1 === date.getDate() ? "bg-[#0d93c4] text-white rounded-full" : ""}`}>
+                    {i + 1}
+                  </div>
+                ))}
+            </div>
+          </div>
 
-          {/* Upload File Button */}
-          <div className="mt-auto flex justify-start">
-            <button
-              onClick={() => handleNavigate('/upload')}
-              className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all ${darkMode ? "border-2 border-white" : "border-2 border-black"}`}
-            >
-              Upload File
-            </button>
+          <div className={`border-2 ${darkMode ? "border-gray-700" : "border-gray-200"} p-6 rounded-lg shadow-sm flex flex-col items-center justify-center`} style={{ height: '140px' }}>
+            <h2 className="text-lg mb-3 text-left w-full">Upload Transcript</h2>
+            <div className="text-center">
+              <button 
+                className="large-btn"
+                onClick={() => router.push('/upload')}
+              >
+                Upload
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Dark Mode Button */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className={`absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full transition-all ease-in-out transform hover:scale-110 ${
-          darkMode ? "bg-white" : "bg-black"
-        } border-2 border-${darkMode ? "black" : "white"}`}
-        style={{
-          fontSize: "1rem",
-        }}
-      >
-        {darkMode ? "🌞" : "🌙"}
-      </button>
     </div>
   );
 }
