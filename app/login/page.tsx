@@ -12,16 +12,62 @@ const supabase = createClient(
 
 export default function Page() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
+  const [showCodeInput, setShowCodeInput] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
   const handleLoginAttempt = async () => {
     if (!email) return;
-    
-    const { error } = await supabase.from("login_attempts").insert([{ email }]);
 
-    if (error) {
-      console.error("Error saving login attempt:", error);
-    } else {
-      console.log("Login attempt recorded");
+    setStatus(null);
+    setShowCodeInput(false);
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setStatus("Verification code sent to your email.");
+        setShowCodeInput(true);
+      } else {
+        setStatus(result.error || "Failed to send verification email.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("An unexpected error occurred.");
+    }
+  };
+
+  const handleCodeSubmit = async () => {
+    try {
+      const res = await fetch("/api/login", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, encrypted: verificationCode }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.verified) {
+        // Log the successful login attempt to Supabase
+        const { error } = await supabase.from("login_attempts").insert([{ email }]);
+        if (error) {
+          setStatus(`Supabase error: ${error.message}`);
+        } else {
+          setStatus("Verification successful and login recorded.");
+          setShowCodeInput(false);
+        }
+      } else {
+        setStatus("Invalid code. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("Server error during verification.");
     }
   };
 
@@ -56,6 +102,24 @@ export default function Page() {
             <div className="text-center">
               <button className="button" onClick={handleLoginAttempt}>Continue</button>
             </div>
+
+            {/* After Email Verification is complete*/}
+            {showCodeInput && (
+              <div className="mt-4">
+                <p>Enter the verification code sent to your email:</p>
+                <input
+                  className="text-input-field mb-2"
+                  maxLength={5}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+                <div className="text-center">
+                  <button className="button" onClick={handleCodeSubmit}>Verify Code</button>
+                </div>
+              </div>
+            )}
+
+            {status && <p className="text-sm mt-2 text-center">{status}</p>}
           </div>
         </div>
       </main>
