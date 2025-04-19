@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
 
 interface Course {
@@ -9,11 +10,10 @@ interface Course {
   status: string;
 }
 
-interface ProfileInfo {
-  name: string;
-  major: string;
-  graduationYear: string;
-}
+// Supabase links
+const supabaseUrl = "https://yutarvvbovvomsbtegrk.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1dGFydnZib3Z2b21zYnRlZ3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5NzcwOTEsImV4cCI6MjA2MDU1MzA5MX0.07f-gbofDPAbeu2UGOAH4DSn2x1YF_5Z4qsKRhKPeMs";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Page() {
   const [roadmap, setRoadmap] = useState<Course[]>([
@@ -22,14 +22,9 @@ export default function Page() {
     { course: "CS 3102", status: "Planned" },
   ]);
 
-  const [profileInfo, setProfileInfo] = useState<ProfileInfo>({
-    name: "John Doe",
-    major: "Computer Science",
-    graduationYear: "2025",
-  });
-
   const router = useRouter();
 
+  // Course suggestions
   const courseSuggestionsData = [
     { course: "CS 4101", reason: "Advanced Programming" },
     { course: "MATH 3001", reason: "Mathematical Foundations" },
@@ -40,25 +35,45 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestionSearchTerm, setSuggestionSearchTerm] = useState("");
 
-  const removeCourse = (index: number): void => {
-    const confirmation = window.confirm("Are you sure you want to remove this course?");
-    if (confirmation) {
-      setRoadmap(roadmap.filter((_, i) => i !== index));
-    }
-  };
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
 
+  // Get user data and profile from Supabase
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+        
+        setProfile(data);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  // Search input for courses
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchTerm(e.target.value);
   };
 
+  // Search input for course suggestions
   const handleSuggestionSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSuggestionSearchTerm(e.target.value);
   };
 
+  // Filter courses by search
   const filteredCourses = roadmap.filter(course =>
     course.course.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Filter suggestions by search
   const filteredSuggestions = courseSuggestions.filter(suggestion =>
     suggestion.course.toLowerCase().includes(suggestionSearchTerm.toLowerCase())
   );
@@ -69,7 +84,7 @@ export default function Page() {
 
       <div className="w-full max-w-5xl px-0 sm:px-6 pt-0 pb-8 relative">
         <div className="flex justify-start">
-          <h1 className="text-xl sm:text-2xl font-bold">Welcome, User!</h1>
+          <h1 className="text-2xl font-bold mb-4">Welcome, {profile?.name || (user ? user.email : 'User')}!</h1>
         </div>
       </div>
 
@@ -86,16 +101,10 @@ export default function Page() {
             />
             <ul className="space-y-2 overflow-y-auto max-h-[200px] sm:max-h-[220px]">
               {filteredCourses.map((item, index) => (
-                <li key={index} className="flex justify-between items-center p-2 border-b">
+                <li key={index} className="p-2 border-b">
                   <span className="text-sm sm:text-md">
                     <strong>{item.course}</strong> - {item.status}
                   </span>
-                  <button
-                    onClick={() => removeCourse(index)}
-                    className="text-red-500 text-sm hover:text-red-700"
-                  >
-                    Remove
-                  </button>
                 </li>
               ))}
             </ul>
@@ -126,7 +135,6 @@ export default function Page() {
             <div className="w-full flex justify-center">
               <button 
                 className="button text-sm px-6 py-2 hover:brightness-95 active:scale-[0.98] transition-all"
-                style={{ width: '120px' }}
                 onClick={() => router.push('/upload')}
               >
                 Upload
