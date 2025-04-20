@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute"; // ✅ auth wrapper
+import ProtectedRoute from "@/components/ProtectedRoute"; 
 import "@/app/global/styles/globals.css";
 
 interface Course {
