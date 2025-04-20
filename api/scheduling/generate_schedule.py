@@ -6,6 +6,8 @@ CURRENT_USER_ID: int = 123456
 MAX_HOURS: int = 20
 MIN_HOURS: int = 12
 
+original_user_data : Dict[str, Dict[str, List['Course']]] = {}
+
 class_dictionary : Dict[str, 'Course'] = {}
 
 class Course:
@@ -15,9 +17,11 @@ class Course:
         self.hours: int = 3
         self.courseID: str = courseID
         self.code: int = code
-        self.requisites: Dict[str, List[Union[str, Course]]] = {
+        self.requisites: Dict[str, List[Union[str, Course, Dict[str, List[Union[str, Course]]]]]] = {
+            "Alternative-reqs": [],
             "Prerequisites": [],
             "Corequisites": [],
+            "Replacements": [],
         }
         self.successors : List[Course] = []
         if isinstance(successor, Course):
@@ -43,7 +47,7 @@ class Course:
         print("TESTING ALSO REQUISITES, COURSES REQUISITES: ", self.requisites)
 
         class_dictionary[self.courseID+" "+str(self.code)] = self
-    
+
     def __eq__(self, value : 'Course') -> bool:
         return isinstance(value, Course) and self.courseID == value.courseID and self.code == value.code
 
@@ -99,6 +103,7 @@ class User:
         self.email: str = ""
         self.curric_name: str = ""
         self.credit: Dict[str, List[Union[str, Course]]] = {} # Dict contains "completed" and "IP" (in progress), but it should also log the semester when things were completed
+        original_user_data = self.credit
         self.completed_semesters : List[str] = []
         self.total_hours : int = 0
         self.gen_ed_credit : Dict[str, List[Course]] = {
@@ -149,7 +154,7 @@ class User:
         return self.curriculum
     
     # Basic coreq/prereq. Does not account for alternative reqs or replacement classes
-    def find_missing_credit(self, course: Course) -> Dict[str, List[Course]]:   # In the future, this should be a dict not list of lists
+    def find_missing_credit(self, course: Course) -> Dict[str, List[Course]]:   
         missing_dict : Dict[str, List[Union[Course, List[Course]]]] = {}
         credit_set : set = set(self.credit["Completed"])
         print(f"Can user take {course.courseID} {course.code}?")
@@ -193,10 +198,17 @@ class User:
             if missing_co:
                 missing_dict["Corequisites"] = missing_co
         if "Alternative-reqs" in course.requisites:
+            for alt in course.requisites["Alternative-reqs"]:
+                if isinstance(alt["bypass-method"], Course) and alt["bypass-method"] in set(self.credit["Completed"]): # This is so inefficient im dying
+                    if alt["bypass-method"] in missing_dict["Prerequisites"]:
+                        missing_dict["Prerequisites"].remove(alt["bypass-method"])
+                elif isinstance(alt["bypass-method"], Course) and alt["bypass-method"] in set(self.credit["IP"]):
+                    if alt["bypass-method"] in missing_dict["Corequisites"]:
+                        missing_dict["Corequisites"].remove(alt["bypass-method"])
             pass
         if "Replacements" in course.requisites:
             pass
-        if "Other" in course.requisites: # The 5 if statement streak is killing me
+        if "Other" in course.requisites: # The 5 if statement streak is killing me, but im leaving it here. I dont actually think it'll be used.
             pass
         print(f"User is missing: {missing_dict}")
         return missing_dict
@@ -214,7 +226,7 @@ class GenEdCourse(Course):
             self.hours: int = course.hours
             self.courseID: str = course.courseID
             self.code: int = course.code
-            self.requisites: Dict[str, List[str]] = course.requisites
+            self.requisites: Dict[str, List[Union[str, Course]]] = course.requisites
         else: 
             super().__init__(courseID, code)
         self.genEd : GenEd = genEd
@@ -437,9 +449,15 @@ class Pool:
         print("-------------------------NEW-POOL-END-------------------------")
         for current_semester in semesters:
             for cred in self.curriculum.credit[current_semester]:
-                if isinstance(cred, Course): # As much as I'd like to use extend here, this if statement makes it tricky. Maybe there's a way, but I don't know how.
+                if isinstance(cred, Course): # As much as I'd like to use a list compos here, this if statement makes it tricky. Maybe there's a way, but I don't know how.
                     if cred not in user_credit and not self.user.find_missing_credit(cred):
-                        new_pool.append(cred)
+                        if not "Replacements" in cred.requisites:
+                            new_pool.append(cred)
+                        else:
+                            if set(user_credit) - set(cred.requisites["Replacements"]) == set(user_credit):
+                                new_pool.append(cred)
+                            else:
+                                pass
                 elif isinstance(cred, GenEd):
                     courses : GenEd = cred.courses
                     for course in courses:
