@@ -1,25 +1,74 @@
 'use client'
-import { useState } from 'react';
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
+interface Course {
+  title: string;
+  credits: string;
+  dept: string;
+  code: string;
+  preReqs: string;
+}
+
+interface Entry extends Course {
+  grade: string;
+  semester: string;
+}
+
+interface TranscriptRow {
+  DEPT: string;
+  CRSE: string;
+  TITLE: string;
+  GR: string;
+  CARR: string;
+  EARN: string;
+  SEMESTER: string;
+  SOURCE: string;
+}
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [csvData, setCsvData] = useState<string | null>(null);
+  const [jsonData, setJsonData] = useState<TranscriptRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [activeTab, setActiveTab] = useState<'upload' | 'manual'>('upload');
+
+  const [courseCatalog, setCourseCatalog] = useState<Course[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [grade, setGrade] = useState('');
+  const [semester, setSemester] = useState('');
+  const [manualEntries, setManualEntries] = useState<Entry[]>([]);
+
+  const semesterOptions = [];
+  for (let year = 2025; year >= 2020; year--) {
+    semesterOptions.push(`1ST SEM ${year}`, `2ND SEM ${year}`);
+  }
+
+  useEffect(() => {
+    fetch('/api/upload?catalog=true')
+      .then(res => res.json())
+      .then((data) => {
+        const cleaned = data
+          .filter((row: any) => row['course ID'] && row['class code'] && !row['course ID'].includes('**'))
+          .map((row: any) => ({
+            title: row['course title'],
+            credits: row['Credit hours'].toString(),
+            dept: row['course ID'],
+            code: row['class code'].toString(),
+            preReqs: Array.isArray(row['preReqs']) ? row['preReqs'].join(' ') : (row['preReqs'] || '')
+          }));
+        setCourseCatalog(cleaned);
+      });
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-    }
+    if (file) setFile(file);
   };
 
   const handleFileUpload = async () => {
     if (!file) return;
-
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -30,17 +79,12 @@ export default function UploadPage() {
         body: formData,
       });
 
-      if (response.ok) {
-        const result = await response.json();
-
-        if (result.data) {
-          setCsvData(result.data);
-          setError(null);
-        } else {
-          setError('No data to display.');
-        }
+      const result = await response.json();
+      if (response.ok && result.data) {
+        setJsonData(result.data);
+        setError(null);
       } else {
-        setError('Error uploading the file.');
+        setError(result.error || 'No data to display.');
       }
     } catch (err) {
       setError('Error uploading the file.');
@@ -49,53 +93,161 @@ export default function UploadPage() {
     }
   };
 
+  const filteredCourses = courseCatalog.filter((course) =>
+    (course.dept + ' ' + course.code).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSubmitEntry = () => {
+    if (selectedCourse && grade && semester) {
+      setManualEntries([...manualEntries, { ...selectedCourse, grade, semester }]);
+      setSelectedCourse(null);
+      setSearchTerm('');
+      setGrade('');
+      setSemester('');
+    }
+  };
+
+  const removeEntry = (indexToRemove: number) => {
+    setManualEntries(prev => prev.filter((_, i) => i !== indexToRemove));
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ entries: manualEntries })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Export failed');
+      alert('Export successful!');
+    } catch (err) {
+      console.error(err);
+      alert('Export failed.');
+    }
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <div className="section-container flex items-center justify-center sm:flex-row gap-8" style={{ margin: 'auto' }}>
-          <div className="flex flex-col items-center sm:flex-row" style={{ margin: "auto" }}>
-            <Image
-              src="/logo.svg"
-              alt="ScheduleLSU logo"
-              width={100}
-              height={100}
-              style={{ transform: 'rotate(90deg)' }}
-              priority
-            />
-            <div style={{ height: 100 }} className="flex justify-center items-center text-lg lg:text-base h-10 font-[family-name:helvetica]">
-              <p style={{ fontSize: "28px" }}>ScheduleLSU</p>
-            </div>
-          </div>
-  
-          <div className="font-[family-name:var(--font-geist-mono)] text-center">
-            <p className="special-header text-lg m-4 text-center font-[family-name:var(--font-geist-mono)]">Upload Transcript</p>
-            <p>Upload Your PDF:</p>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="text-input-field mb-4 p-2 border border-gray-300 rounded-md"
-            />
-            <div className="text-center">
-              <button
-                onClick={handleFileUpload}
-                className="button p-2 bg-blue-500 text-white rounded-md"
-                disabled={loading}
-              >
-                {loading ? 'Uploading...' : 'Upload'}
-              </button>
-            </div>
-            {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
-          </div>
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start w-full max-w-5xl">
+        {/* Header */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <Image src="/logo.svg" alt="ScheduleLSU logo" width={70} height={70} style={{ transform: 'rotate(90deg)' }} priority />
+          <p className="text-3xl font-semibold">ScheduleLSU</p>
         </div>
-  
-        {/* CSV Output */}
-        {csvData && (
-          <div className="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 w-full max-w-2xl">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Transcript Data</h2>
-            <div className="overflow-y-auto h-[50vh]">
-              <pre className="text-sm text-gray-700 whitespace-pre-wrap">{csvData}</pre>
-            </div>
+
+        {/* Tabs */}
+        <div className="flex border-b w-full justify-center gap-6">
+          <button
+            className={`pb-2 px-4 font-medium ${activeTab === 'upload' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('upload')}
+          >
+            Upload Transcript
+          </button>
+          <button
+            className={`pb-2 px-4 font-medium ${activeTab === 'manual' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('manual')}
+          >
+            Manual Entry
+          </button>
+        </div>
+
+        {/* Upload Transcript */}
+        {activeTab === 'upload' && (
+          <div className="w-full text-center">
+            <p>Upload Your PDF:</p>
+            <input type="file" onChange={handleFileChange} className="mb-4 p-2 border border-gray-300 rounded-md" />
+            <button onClick={handleFileUpload} className="p-2 bg-blue-500 text-white rounded-md" disabled={loading}>
+              {loading ? 'Uploading...' : 'Upload'}
+            </button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {jsonData && (
+              <div className="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 w-full overflow-x-auto">
+                <h2 className="text-xl font-semibold mb-4 text-center">Transcript Data</h2>
+                <table className="table-auto w-full border-collapse text-sm">
+                  <thead>
+                    <tr>
+                      <th className="border px-2 py-1">Semester</th>
+                      <th className="border px-2 py-1">Dept</th>
+                      <th className="border px-2 py-1">Crse</th>
+                      <th className="border px-2 py-1">Title</th>
+                      <th className="border px-2 py-1">Grade</th>
+                      <th className="border px-2 py-1">Carried</th>
+                      <th className="border px-2 py-1">Earned</th>
+                      <th className="border px-2 py-1">Source</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jsonData.map((row, idx) => (
+                      <tr key={idx}>
+                        <td className="border px-2 py-1">{row.SEMESTER}</td>
+                        <td className="border px-2 py-1">{row.DEPT}</td>
+                        <td className="border px-2 py-1">{row.CRSE}</td>
+                        <td className="border px-2 py-1">{row.TITLE}</td>
+                        <td className="border px-2 py-1">{row.GR}</td>
+                        <td className="border px-2 py-1">{row.CARR}</td>
+                        <td className="border px-2 py-1">{row.EARN}</td>
+                        <td className="border px-2 py-1">{row.SOURCE}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Manual Entry Tab */}
+        {activeTab === 'manual' && (
+          <div className="w-full text-center mt-6">
+            <h2 className="text-2xl font-semibold mb-4">Manual Transcript Entry</h2>
+            {!selectedCourse && (
+              <>
+                <input className="p-2 border rounded w-full max-w-lg mb-4" placeholder="Search for a class (e.g. ACCT)" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                {searchTerm && (
+                  <div className="w-full max-w-lg text-left bg-white border rounded shadow-md p-4 mb-4 max-h-60 overflow-y-auto">
+                    {filteredCourses.length > 0 ? (
+                      filteredCourses.map((course, i) => (
+                        <div key={i} className="p-2 cursor-pointer hover:bg-blue-100 rounded" onClick={() => setSelectedCourse(course)}>
+                          {course.dept} {course.code} - {course.title} ({course.credits} credits)
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No matches found.</p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+            {selectedCourse && (
+              <div className="flex flex-col items-center gap-4 mb-6">
+                <p className="text-lg font-medium">{selectedCourse.dept} {selectedCourse.code} - {selectedCourse.title} ({selectedCourse.credits} credits)</p>
+                <input className="p-2 border rounded" placeholder="Grade (e.g. A)" value={grade} onChange={(e) => setGrade(e.target.value)} />
+                <select className="p-2 border rounded" value={semester} onChange={(e) => setSemester(e.target.value)}>
+                  <option value="">Select Semester</option>
+                  {semesterOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+                <button className="p-2 bg-green-500 text-white rounded" onClick={handleSubmitEntry} disabled={!grade || !semester}>Submit Course</button>
+              </div>
+            )}
+            {manualEntries.length > 0 && (
+              <div className="text-left max-w-2xl mx-auto">
+                <h3 className="text-lg font-bold mb-2">Courses Added:</h3>
+                <ul className="bg-gray-100 p-4 rounded-md">
+                  {manualEntries.map((c, i) => (
+                    <li key={i} className="mb-2 flex justify-between items-center">
+                      <span>{c.dept} {c.code} - {c.title} ({c.credits} credits) | Grade: {c.grade} | Semester: {c.semester}</span>
+                      <button onClick={() => removeEntry(i)} className="ml-4 px-2 py-1 text-sm bg-red-500 text-white rounded">Remove</button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="text-center mt-4">
+                  <button onClick={handleExport} className="px-4 py-2 bg-blue-600 text-white rounded shadow">Export to Data Folder</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
