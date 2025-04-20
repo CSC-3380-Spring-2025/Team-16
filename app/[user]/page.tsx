@@ -53,8 +53,9 @@ const UserProfile: React.FC = () => {
           <p><strong>Minor:</strong> {user.minor}</p>
           <p><strong>Year:</strong> {user.year}</p>
         </div>
+
         <button
-          className="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+          className="mt-6 cursor-pointer text-white font-bold shadow-md hover:scale-[1.05] shadow-purple-400 rounded-full px-5 py-2 bg-gradient-to-bl from-purple-500 to-purple-800 transition-transform"
           onClick={() => setIsEditing(!isEditing)}
         >
           {isEditing ? "Done" : "Edit Profile"}
