@@ -145,6 +145,6 @@ export default function SchedulePage() {
   );
 }
 
-export default function Page() {
+export default function SchedulePage() {
   return <SchedulePage />;
 }
