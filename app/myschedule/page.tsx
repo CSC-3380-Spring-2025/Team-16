@@ -1,83 +1,3 @@
-"use client";
-
-import React, { useState } from "react";
-
-// Types
-type Course = {
-  code: string;
-  title: string;
-  credits: number;
-};
-
-type Semester = {
-  term: string;
-  courses: Course[];
-};
-
-type RecommendedCourse = {
-  course: string;
-  title: string;
-  reason: string;
-};
-
-// Data
-const scheduleData: Semester[] = [
-  { term: "Spring 2023", courses: [{ code: "ART 2050", title: "DIGITAL ART I", credits: 3 }] },
-  {
-    term: "Fall 2023",
-    courses: [
-      { code: "BIOL 1001", title: "GENERAL BIOLOGY", credits: 3 },
-      { code: "CPLT 2201", title: "INTRO WORLD LIT TRAD", credits: 3 },
-      { code: "CSC 1350", title: "COMP SCI I-MJRS", credits: 4 },
-      { code: "MATH 1550", title: "CALCULUS I", credits: 5 },
-      { code: "PSYC 2000", title: "INTRO TO PSYCHOLOGY", credits: 3 }
-    ]
-  },
-  {
-    term: "Spring 2024",
-    courses: [
-      { code: "CSC 1351", title: "COMP SCI II-MJRS", credits: 4 },
-      { code: "ENGL 2000", title: "ENGLISH COMP", credits: 3 },
-      { code: "HNRS 2021", title: "SONGWRITING", credits: 3 },
-      { code: "MATH 1553", title: "HON- AN GEOM CAL II", credits: 4 },
-      { code: "PHYS 2001", title: "GENERAL PHYSICS", credits: 3 },
-      { code: "PHYS 2108", title: "LAB WRK TECHN PHYS", credits: 1 }
-    ]
-  },
-  {
-    term: "Fall 2024",
-    courses: [
-      { code: "CSC 2259", title: "DISCRETE STRUCTURES", credits: 3 },
-      { code: "CSC 3102", title: "ADV DATA STRUCTURES", credits: 3 },
-      { code: "HNRS 2000", title: "WHERE WE'RE HEADED", credits: 3 },
-      { code: "MATH 2090", title: "DIFF EQ & LIN ALGEBRA", credits: 4 },
-      { code: "PHYS 2002", title: "GENERAL PHYSICS", credits: 3 },
-      { code: "PHYS 2109", title: "GEN PHYSICS LAB", credits: 1 }
-    ]
-  },
-  {
-    term: "Spring 2025",
-    courses: [
-      { code: "CMST 2060", title: "PUBLIC SPEAKING", credits: 3 },
-      { code: "CSC 2262", title: "NUMERICAL METHODS", credits: 3 },
-      { code: "CSC 3200", title: "ETHICS IN COMPUTING", credits: 1 },
-      { code: "CSC 3304", title: "INTRO TO SYSTM PROG", credits: 3 },
-      { code: "CSC 3380", title: "OBJ ORIENTED DESIGN", credits: 3 },
-      { code: "HNRS 2020", title: "ENGINEERING ETHICS", credits: 3 }
-    ]
-  }
-];
-
-const recommendations: RecommendedCourse[] = [
-  { course: "CSC 4101", title: "Theory of Computation", reason: "Required for Computer Science major" },
-  { course: "MATH 3001", title: "Advanced Calculus", reason: "Pre-requisite for CSC 4101" },
-  { course: "ENGL 2025", title: "Introduction to Literature", reason: "Fulfills General Education requirement" },
-  { course: "PHIL 2010", title: "Symbolic Logic", reason: "Recommended for algorithmic thinking" },
-  { course: "CSC 4220", title: "Software Engineering", reason: "Core requirement for Software Development track" },
-  { course: "STAT 3032", title: "Statistics for Engineers", reason: "Required for technical electives" }
-];
-
-// Combined Component
 export default function SchedulePage() {
   const [view, setView] = useState<"schedule" | "recommended">("schedule");
   const [selectedYear, setSelectedYear] = useState("2024");
@@ -92,21 +12,41 @@ export default function SchedulePage() {
 
   const filteredSchedule = scheduleData.filter((s) => s.term.includes(selectedYear));
 
+  // 🎨 Class variables
+  const tabClass = (active: boolean) =>
+    `px-6 py-2 rounded-full font-semibold ${
+      active ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
+    }`;
+
+  const yearButtonClass = (year: string) =>
+    `px-4 py-2 rounded-full text-sm font-semibold ${
+      selectedYear === year
+        ? "bg-blue-600 text-white"
+        : "bg-white border border-blue-400 text-blue-600"
+    }`;
+
+  const courseCardClass = (selected: boolean) =>
+    `p-4 border rounded-lg shadow-sm transition cursor-pointer ${
+      selected ? "bg-blue-100 border-blue-500" : "bg-white"
+    }`;
+
+  const courseClickClass =
+    "cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200";
+
+  const closeButtonClass =
+    "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700";
+
   return (
     <div className="min-h-screen bg-gray-100 text-black p-6">
       <div className="flex justify-center gap-4 mb-8">
         <button
-          className={`px-6 py-2 rounded-full font-semibold ${
-            view === "schedule" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
-          }`}
+          className={tabClass(view === "schedule")}
           onClick={() => setView("schedule")}
         >
           My Schedule
         </button>
         <button
-          className={`px-6 py-2 rounded-full font-semibold ${
-            view === "recommended" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
-          }`}
+          className={tabClass(view === "recommended")}
           onClick={() => setView("recommended")}
         >
           Recommended Classes
@@ -124,11 +64,7 @@ export default function SchedulePage() {
                   setSelectedYear(year);
                   setActiveCourse(null);
                 }}
-                className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  selectedYear === year
-                    ? "bg-blue-600 text-white"
-                    : "bg-white border border-blue-400 text-blue-600"
-                }`}
+                className={yearButtonClass(year)}
               >
                 {year}
               </button>
@@ -144,7 +80,7 @@ export default function SchedulePage() {
                     <div
                       key={i}
                       onClick={() => setActiveCourse(course)}
-                      className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200"
+                      className={courseClickClass}
                     >
                       <strong>{course.code}</strong> - {course.credits} credits
                     </div>
@@ -164,11 +100,7 @@ export default function SchedulePage() {
             {recommendations.map((course) => (
               <div
                 key={course.course}
-                className={`p-4 border rounded-lg shadow-sm transition cursor-pointer ${
-                  selectedCourses.includes(course.course)
-                    ? "bg-blue-100 border-blue-500"
-                    : "bg-white"
-                }`}
+                className={courseCardClass(selectedCourses.includes(course.course))}
                 onClick={() => toggleCourse(course.course)}
               >
                 <h2 className="text-xl font-semibold mb-1">{course.course}</h2>
@@ -202,7 +134,7 @@ export default function SchedulePage() {
             <p className="mb-4 text-gray-600">Credits: {activeCourse.credits}</p>
             <button
               onClick={() => setActiveCourse(null)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className={closeButtonClass}
             >
               Close
             </button>
@@ -212,6 +144,7 @@ export default function SchedulePage() {
     </div>
   );
 }
+
 export default function Page() {
   return <SchedulePage />;
 }
