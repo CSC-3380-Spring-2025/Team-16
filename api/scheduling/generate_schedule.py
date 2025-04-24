@@ -37,10 +37,10 @@ class Course:
                         self.requisites = json.loads(row[5])
                         self._convert_requisites()
                     except json.JSONDecodeError:
-                        print(f"Invalid JSON format for requisites for course {courseID} {code} ({self.id}). Data: {row[5]}")
+                        ###print(f"Invalid JSON format for requisites for course {courseID} {code} ({self.id}). Data: {row[5]}")
                         self.requisites = {}                    
                     break
-        print("TESTING ALSO REQUISITES, COURSES REQUISITES: ", self.requisites)
+        ###print("TESTING ALSO REQUISITES, COURSES REQUISITES: ", self.requisites)
 
         class_dictionary[self.courseID+" "+str(self.code)] = self
     
@@ -54,11 +54,11 @@ class Course:
         for key in ["Prerequisites", "Corequisites"]:
             if key in self.requisites and isinstance(self.requisites[key], list):
                 converted_courses : list[Course] = []
-                print("self.requisites[key]:",self.requisites[key])
+                ###print("self.requisites[key]:",self.requisites[key])
                 for req in self.requisites[key]:
-                    print("req:",req)
+                    ###print("req:",req)
                     if isinstance(req, dict) and "Requirement" in req and req["Type"] == "Class":
-                        print(req["Requirement"])
+                        ###print(req["Requirement"])
                         #class_list : list = req["Requirement"] if isinstance(req["Requirement"], list) else [req["Requirement"]]
                         temp = req["Requirement"][0] if len(req["Requirement"]) < 2 and isinstance(req["Requirement"], list) else req["Requirement"]
                         if isinstance(temp, list):
@@ -121,7 +121,7 @@ class User:
                     try:
                         self.credit = json.loads(row[4])    # Parse the JSON
                     except json.JSONDecodeError:
-                        print(f"Invalid JSON format for user credit. Data: {row[4]}")
+                        ###print(f"Invalid JSON format for user credit. Data: {row[4]}")
                         self.credit = {}
                     self._convert_courses()
                     break
@@ -144,7 +144,7 @@ class User:
             self.credit[semester] = converted_courses
 
     def get_curriculum(self) -> "Curriculum":
-        print(f"Finding curriculum for: {self.name}'s {self.curric_name} program!")
+        ###print(f"Finding curriculum for: {self.name}'s {self.curric_name} program!")
         self.curriculum : Curriculum = Curriculum(self.curric_name)
         return self.curriculum
     
@@ -152,7 +152,7 @@ class User:
     def find_missing_credit(self, course: Course) -> Dict[str, List[Course]]:   # In the future, this should be a dict not list of lists
         missing_dict : Dict[str, List[Union[Course, List[Course]]]] = {}
         credit_set : set = set(self.credit["Completed"])
-        print(f"Can user take {course.courseID} {course.code}?")
+        ###print(f"Can user take {course.courseID} {course.code}?")
         if "Prerequisites" in course.requisites:
             missing_pre : List[Course]
             prereq_set : set
@@ -176,7 +176,7 @@ class User:
                     prereq_set = set()
             else: 
                 prereq_set = set()
-            print(f"Extracted prereq courses: {prereq_set}")
+            ###print(f"Extracted prereq courses: {prereq_set}")
 
             # missing_pre : List[Course] = list(prereq_set - credit_set)            
             # if missing_pre:
@@ -198,7 +198,7 @@ class User:
             pass
         if "Other" in course.requisites: # The 5 if statement streak is killing me
             pass
-        print(f"User is missing: {missing_dict}")
+        ###print(f"User is missing: {missing_dict}")
         return missing_dict
 
     def find_completed_semesters(self) -> None:
@@ -222,7 +222,7 @@ class GenEdCourse(Course):
 
 class GenEd: # The "skeleton" implementation of the algorithm doesnt deal with gen ed classes (We do have the data on them)
     def __init__(self, type: str) -> None:
-        print(f"Gen Ed Course Found! ({type})")
+        ###print(f"Gen Ed Course Found! ({type})")
         self.type : str = type
         self.courses : List[Course] = []# This list will be a list of courses valid for this GenEd credit
         
@@ -278,7 +278,7 @@ class Curriculum:
                         raw_credit: Dict[str, List[str]] = json.loads(row[5])  # Get raw JSON data
                         self._convert_courses(raw_credit)  # Convert to Course objects
                     except json.JSONDecodeError:
-                        print(f"Invalid JSON format for curriculum. Data: {row[5]}")
+                        ###print(f"Invalid JSON format for curriculum. Data: {row[5]}")
                         self.credit = {}
                     self.hours = int(row[6])
                     self.restrictions = row[7]
@@ -339,7 +339,8 @@ class Curriculum:
             if isinstance(course, Course):
                 pool.add(course)
             else:
-                print(f"Skipping invalid course entry, likely a gen ed: {course}")
+                pass
+                ###print(f"Skipping invalid course entry, likely a gen ed: {course}")
 
         return pool
     
@@ -354,7 +355,7 @@ class Curriculum:
         for sem in self.credit:
             if all(cred in user.credit["Completed"] for cred in self.credit[sem]):
                 completed.append(sem)
-        print("Semesters completed: ", completed)
+        ###print("Semesters completed: ", completed)
         return completed
 
 
@@ -390,7 +391,7 @@ class Pool:
         semesters : List[str] = list(set(self.curriculum.credit.keys())-set(self.completed))
         user_credit: List[Course]= self.user.credit["Completed"]
         current_pool : List[Union[Course, List[Course]]] = list(set(self.pool)-set(user_credit))
-        print(f"viable semesters for pool: {semesters}")
+        ###print(f"viable semesters for pool: {semesters}")
         for current_semester in semesters:
             current_pool.extend([cred for cred in self.curriculum.credit[current_semester] if cred not in user_credit and not self.user.find_missing_credit(cred)])
         self.pool = current_pool
@@ -404,8 +405,8 @@ class Pool:
             for course in self.pool:
                 if semester in self.curriculum.credit and course in self.curriculum.credit[semester] and hrs+course.hours <= MAX_HOURS:
                     hrs += course.hours
-                    print("COURSE HOURS: ", course.hours)
-                    print("TOTAL HOURS: ", hrs)
+                    ###print("COURSE HOURS: ", course.hours)
+                    ###print("TOTAL HOURS: ", hrs)
                     
                     schedule.append(course)
         
@@ -417,25 +418,25 @@ class Pool:
         user_progress: List[Course] = self.user.credit["IP"] # PROJECTED PROGRESS WOULD GO SOMEWHERE AROUND HERE IN THE FUTURE
         #new_pool : List[Course] = list((set(self.pool)-set(user_credit))-set(user_progress))
         new_pool : List[Course] = []
-        print(f"viable semesters for pool: {semesters}")
-        print("USER HAS CREDIT FOR: ")
+        ###print(f"viable semesters for pool: {semesters}")
+        ###print("USER HAS CREDIT FOR: ")
         j : int = 0
         # for i in user_credit:
         #     j += 1
-        #     print(f"{j}. {i.courseID} {i.code}")
-        # print("-------------------------CREDIT-END-------------------------")
-        # print("OLD POOL: ")
+        #     ###print(f"{j}. {i.courseID} {i.code}")
+        # ###print("-------------------------CREDIT-END-------------------------")
+        # ###print("OLD POOL: ")
         # j : int = 0
         # for i in self.pool:
         #     j += 1
-        #     print(f"{j}. {i.courseID} {i.code}")
-        # print("-------------------------POOL-END-------------------------")
-        # print("NEW POOL: ")
+        #     ###print(f"{j}. {i.courseID} {i.code}")
+        # ##print("-------------------------POOL-END-------------------------")
+        # ##print("NEW POOL: ")
         # j : int = 0
         # for i in new_pool:
         #     j += 1
-        #     print(f"{j}. {i.courseID} {i.code}")
-        # print("-------------------------NEW-POOL-END-------------------------")
+        #     ##print(f"{j}. {i.courseID} {i.code}")
+        # ##print("-------------------------NEW-POOL-END-------------------------")
         for current_semester in semesters:
             for cred in self.curriculum.credit[current_semester]:
                 if isinstance(cred, Course): # As much as I'd like to use extend here, this if statement makes it tricky. Maybe there's a way, but I don't know how.
@@ -449,18 +450,19 @@ class Pool:
                     if cred.courses:
                         new_pool.append(cred.find_credit(self.user))
         self.pool = new_pool
-        print("NEW POOL: ")
+        ##print("NEW POOL: ")
         j : int = 0
         for i in new_pool:
             j += 1
             if isinstance(i, Course):
-                print(f"{j}. {i.courseID} {i.code}")
+                ##print(f"{j}. {i.courseID} {i.code}")
+                pass
             elif isinstance(i, list):
                 k :int = 0
                 for x in i:
                     k += 1
-                    print(f"{j}.{k}. {x}")
-        print("-------------------------NEW-POOL-END-------------------------")
+                    ##print(f"{j}.{k}. {x}")
+        ##print("-------------------------NEW-POOL-END-------------------------")
         return
             
     def alt_schedule_semester(self) -> List[Course]:
@@ -487,21 +489,21 @@ class Pool:
             group.sort(key=lambda c : c.weight, reverse=True)
 
         #favored : List[Course] = sorted(self.pool, reverse=True)
-        print(f"FAVORED REGULAR COURSES:")
-        for r in regular_courses:
-            print(f"{r.title}")
-        print(f"FAVORED REGULAR WEIGHTS:")
-        for r in regular_courses:
-            print(f"{r.weight}")
+        ##print(f"FAVORED REGULAR COURSES:")
+        # for r in regular_courses:
+        #     ##print(f"{r.title}")
+        # ##print(f"FAVORED REGULAR WEIGHTS:")
+        # for r in regular_courses:
+        #     ##print(f"{r.weight}")
 
-        print(self.pool)
+        ##print(self.pool)
 
         for semester in sorted(self.curriculum.credit.keys(), key=lambda x: int(x.split()[-1])): 
             for course in self.pool:
                 if course in self.curriculum.credit[semester] and hrs+course.hours <= MAX_HOURS:
                     hrs += course.hours
-                    print("COURSE HOURS: ", course.hours)
-                    print("TOTAL HOURS: ", hrs)
+                    ##print("COURSE HOURS: ", course.hours)
+                    ##print("TOTAL HOURS: ", hrs)
                     
                     if course not in self.user.credit["Completed"]: schedule.append(course)
         i = 0
@@ -529,7 +531,7 @@ class Pool:
         #     for cred in self.curriculum.credit[semester]:
         #         if isinstance(cred, GenEd):
         #             for gen_ed in cred.courses:
-        #                 print(f"TESTINGINGINGING {gen_ed} REQUISITES: ", gen_ed.requisites)
+        #                 ##print(f"TESTINGINGINGING {gen_ed} REQUISITES: ", gen_ed.requisites)
         #                 if "Prerequisites" in gen_ed.requisites.keys() and course in gen_ed.requisites["Prerequisites"]: req_count+=1
         #         else:
         #             if "Prerequisites" in cred.requisites.keys() and course in cred.requisites["Prerequisites"]: req_count += 1
@@ -537,7 +539,7 @@ class Pool:
         return min(max(len(course.successors)/4, 0), 1)
 
     def prereq_score(self, course: Union[Course, List[Course]]) -> float:
-        print(f"EXPLAIIIIIIIIIINNNN: {course}")
+        ##print(f"EXPLAIIIIIIIIIINNNN: {course}")
         if isinstance(course, list):
             for gen_ed in course:
                 if "Prerequisites" in gen_ed.requisites.keys(): 
@@ -569,8 +571,8 @@ class Pool:
                 if course == cred : 
                     course_semester = float(semester[-1])
                     break
-        print(course_semester%2)
-        print((len(self.completed)+1)%2)
+        ##print(course_semester%2)
+        ##print((len(self.completed)+1)%2)
         if not course_semester%2 == (len(self.completed)+1)%2:
             return 0.0
         else:
@@ -621,8 +623,8 @@ class Pool:
 
     def calc_weight(self, course: Course) -> float:
         w : float = 0
-        print("THIS IS THE COURSE OBJECT BEING WEIGHTED: ", course)
-        print("IS A LIST?", isinstance(course, list))
+        ##print("THIS IS THE COURSE OBJECT BEING WEIGHTED: ", course)
+        ##print("IS A LIST?", isinstance(course, list))
         w += 0.20 * self.dependency_score(course)       # X DONE X Score for how dependent other classes are on this class (i.e. how many classes prereq this class)
         w += 0.10 * self.prereq_score(course)           # X DONE X Score to give preference to classes which have more prerequisites
         w += 0.15 * self.credit_hour_score(course)      # X DONE X Weighting based on how close to the recommended credit hour mark
@@ -642,93 +644,114 @@ class Pool:
         current_hours : int = self.hours
 
         if current_hours > MAX_HOURS:
-            print("Over hours! 1")
+            ##print("Over hours! 1")
             return self.pool
-        print("self curriculum credit[current_semester]", self.curriculum.credit[current_semester])
+        ##print("self curriculum credit[current_semester]", self.curriculum.credit[current_semester])
         for cred in self.curriculum.credit[current_semester]:   # Can't do a set here bc gen eds aren't converted to their own objects. If they were, a set could pontentially work.
-            print("CREDLOOP, CRED: ", cred)
+            ##print("CREDLOOP, CRED: ", cred)
             if cred not in user_credit:                         # ^^^ could simplify in future
                 try:
                     temp : int = current_hours + cred.hours
                 except AttributeError:
-                    print(f"curric: {self.curriculum}")
-                    print(f"curric cred list: {self.curriculum.credit}")
-                    print(f"What da {cred} doin?")
+                    pass
+                    ##print(f"curric: {self.curriculum}")
+                    ##print(f"curric cred list: {self.curriculum.credit}")
+                    ##print(f"What da {cred} doin?")
                 if not temp > MAX_HOURS:
                     current_pool.append([cred])
                     current_hours += cred.hours
                     self.hours = current_hours
                 else:
-                    print("Over hours! 2")
+                    ##print("Over hours! 2")
                     self.pool = current_pool
                     return self.pool
         if self.hours < MAX_HOURS:
-            print(self.hours)
-            print(current_hours)
+            ##print(self.hours)
+            ##print(current_hours)
+            pass
             
 
 def main() -> None:
     user: User = User(CURRENT_USER_ID)
     curriculum: Curriculum = user.get_curriculum()
     cred: Course = user.credit
-    print("User Courses:", cred)  # Debug: Check converted courses
-    print("1st Completed Course: ", cred["Completed"][0].code)
-    print("Curriculum Courses:", curriculum.credit)  # Debug: Check converted curriculum courses
+    ##print("User Courses:", cred)  # Debug: Check converted courses
+    ##print("1st Completed Course: ", cred["Completed"][0].code)
+    ##print("Curriculum Courses:", curriculum.credit)  # Debug: Check converted curriculum courses
     i : int = 0
     for sem in curriculum.credit:
         for clas in curriculum.credit[sem]:
             i = i + 1
             try:
-                print(f"Class {i}: {clas.courseID} {clas.code}")
+                ##print(f"Class {i}: {clas.courseID} {clas.code}")
+                pass
             except AttributeError:
-                print(f"Class {i}: {clas.type} Gen Ed")
+                pass
+                ##print(f"Class {i}: {clas.type} Gen Ed")
     test: Pool = Pool(user=user, curriculum=curriculum)
-    print("test pool obj: ", test)
-    print("full test pool: ", test.pool)
+    ##print("test pool obj: ", test)
+    ##print("full test pool: ", test.pool)
     test.alt_update()
-    print("test pool updated: ", test.pool)
+    ##print("test pool updated: ", test.pool)
     for course in test.pool:
         if isinstance(course, list):
-            print(f"{course[0].type} Gen Ed Course Options: ")
+            ##print(f"{course[0].type} Gen Ed Course Options: ")
             for g_ed_class in course:
-                print(f"Option: {g_ed_class.courseID} {g_ed_class.code}")
+                pass
+                ##print(f"Option: {g_ed_class.courseID} {g_ed_class.code}")
         elif isinstance(course, Course):
-            print(f"Class: {course.courseID} {course.code}")
+            pass
+            ##print(f"Class: {course.courseID} {course.code}")
         else:
-            print(f"IDk what the fuck this is: ", course)
+            pass
+            ##print(f"IDk what the fuck this is: ", course)
     schedule : List[Course] = test.alt_schedule_semester()
     #userSchedule : List[Course] = user.schedule_semester()
-    print("-------------SCHEDULE-------------") # Note that this schedule will NOT work right now. Reasons below.
+    ##print("-------------SCHEDULE-------------") # Note that this schedule will NOT work right now. Reasons below.
     for course in schedule:
         try:
-            print(f"Class: {course.courseID} {course.code}")
+            ##print(f"Class: {course.courseID} {course.code}")
+            pass
         except AttributeError:
-            print(f"{clas.type} Gen Ed")
+            pass
+            ##print(f"{clas.type} Gen Ed")
 
 
     user.credit["IP"].extend(schedule)
     user.credit["Completed"].extend(user.credit["IP"])
-
     
+    semester1 : List[str] = []
+    semester2 : List[str] = []
+
     test.alt_update()
     schedule2 : List[Course] = test.alt_schedule_semester()
-    print("-------------Semester 1-------------") # Note that this schedule will NOT work right now. Reasons below.
+    ##print("-------------Semester 1-------------") # Note that this schedule will NOT work right now. Reasons below.
     for course in schedule:
         try:
-            print(f"Class: {course.courseID} {course.code}")
+            ##print(f"Class: {course.courseID} {course.code}")
+            semester1.append(course.courseID + str(course.code))
         except AttributeError:
-            print(f"{clas.type} Gen Ed")
-    print("-------------Semester 2-------------") # Note that this schedule will NOT work right now. Reasons below.
+            ##print(f"{clas.type} Gen Ed")
+            pass
+    ##print("-------------Semester 2-------------") # Note that this schedule will NOT work right now. Reasons below.
     for course in schedule2:
         try:
-            print(f"Class: {course.courseID} {course.code}")
+            ##print(f"Class: {course.courseID} {course.code}")
+            semester2.append(course.courseID + str(course.code))
         except AttributeError:
-            print(f"{clas.type} Gen Ed")
+            ###print(f"{clas.type} Gen Ed")
+            pass
     # ----REASONS FOR FAILURE----
     # 1 - No Gen ed Handling. This can be done with a gen ed class. Maybe one that's a child of course, to make things easier. We'd also likely need alternate handling for its lists (since it will have lists where other courses have single classes)
     # 2 - DATA SAMPLE. The data sample I have does not include classes like 3102 or 1552, so even though clearly 1351 is a prereq for 3102, it will schedule you for both at once. IF given the full data set, which I would do if it was properly formatted, it would not do this.
     # 3 - Doesnt branch at all/try to find replacements for classes, and so if you have a valid replacement class or replacement requisite, it won't see that right now. This is logic that should be added in the can_take function.
     # 4 - BASIC algorithm version. This is meant to be barebones, just to show the idea and show that it can give a valid schedule, which it can. This does not include any sort of weighting system or acknowledge class successors, just to name a couple examples of areas for future improvement.
 
+    return {
+        "Semester 1" : semester1,
+        "Semester 2" : semester2
+    }
+
 if __name__ == "__main__":
-    main()
+    schedule = main()
+    print(json.dumps(schedule))
