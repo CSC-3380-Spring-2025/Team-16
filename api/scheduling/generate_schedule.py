@@ -3,7 +3,7 @@ import json
 from typing import Dict, List, Set, Union
 
 CURRENT_USER_ID: int = 123456
-MAX_HOURS: int = 20
+MAX_HOURS: int = 16
 MIN_HOURS: int = 12
 
 class_dictionary : Dict[str, 'Course'] = {}
@@ -245,7 +245,7 @@ class GenEd: # The "skeleton" implementation of the algorithm doesnt deal with g
     
     def find_next_credit(self, user : User, start : Course) -> GenEdCourse:
         for i in range(1, 11):
-            code : int = start.code + i
+            code : int = int(start.code) + int(i)
             next_course : GenEdCourse = GenEdCourse(self, start.courseID, code) 
             if start in next_course.requisites["Corequisites"] or start in next_course.requisites["Prerequisites"]:
                 return next_course
@@ -415,30 +415,31 @@ class Pool:
         semesters : List[str] = list(set(self.curriculum.credit.keys())-set(self.completed))
         user_credit: List[Course] = self.user.credit["Completed"]
         user_progress: List[Course] = self.user.credit["IP"] # PROJECTED PROGRESS WOULD GO SOMEWHERE AROUND HERE IN THE FUTURE
-        new_pool : List[Course] = list((set(self.pool)-set(user_credit))-set(user_progress))
+        #new_pool : List[Course] = list((set(self.pool)-set(user_credit))-set(user_progress))
+        new_pool : List[Course] = []
         print(f"viable semesters for pool: {semesters}")
         print("USER HAS CREDIT FOR: ")
         j : int = 0
-        for i in user_credit:
-            j += 1
-            print(f"{j}. {i.courseID} {i.code}")
-        print("-------------------------CREDIT-END-------------------------")
-        print("OLD POOL: ")
-        j : int = 0
-        for i in self.pool:
-            j += 1
-            print(f"{j}. {i.courseID} {i.code}")
-        print("-------------------------POOL-END-------------------------")
-        print("NEW POOL: ")
-        j : int = 0
-        for i in new_pool:
-            j += 1
-            print(f"{j}. {i.courseID} {i.code}")
-        print("-------------------------NEW-POOL-END-------------------------")
+        # for i in user_credit:
+        #     j += 1
+        #     print(f"{j}. {i.courseID} {i.code}")
+        # print("-------------------------CREDIT-END-------------------------")
+        # print("OLD POOL: ")
+        # j : int = 0
+        # for i in self.pool:
+        #     j += 1
+        #     print(f"{j}. {i.courseID} {i.code}")
+        # print("-------------------------POOL-END-------------------------")
+        # print("NEW POOL: ")
+        # j : int = 0
+        # for i in new_pool:
+        #     j += 1
+        #     print(f"{j}. {i.courseID} {i.code}")
+        # print("-------------------------NEW-POOL-END-------------------------")
         for current_semester in semesters:
             for cred in self.curriculum.credit[current_semester]:
                 if isinstance(cred, Course): # As much as I'd like to use extend here, this if statement makes it tricky. Maybe there's a way, but I don't know how.
-                    if cred not in user_credit and not self.user.find_missing_credit(cred):
+                    if cred not in self.user.credit["Completed"] and not self.user.find_missing_credit(cred):
                         new_pool.append(cred)
                 elif isinstance(cred, GenEd):
                     courses : GenEd = cred.courses
@@ -502,7 +503,7 @@ class Pool:
                     print("COURSE HOURS: ", course.hours)
                     print("TOTAL HOURS: ", hrs)
                     
-                    schedule.append(course)
+                    if course not in self.user.credit["Completed"]: schedule.append(course)
         i = 0
         # while hrs < MAX_HOURS: 
         #     try:         
@@ -515,7 +516,7 @@ class Pool:
         #     except IndexError:
         #         return schedule
         while hrs < MAX_HOURS and len(grouped_gened_courses) > 0 and grouped_gened_courses[i][i].hours+hrs <= MAX_HOURS:
-            schedule.append(grouped_gened_courses[i][i])
+            if grouped_gened_courses[i][i] not in self.user.credit["Completed"]: schedule.append(grouped_gened_courses[i][i])
             hrs += grouped_gened_courses[i][i].hours
             i+=1
             
@@ -699,6 +700,26 @@ def main() -> None:
     #userSchedule : List[Course] = user.schedule_semester()
     print("-------------SCHEDULE-------------") # Note that this schedule will NOT work right now. Reasons below.
     for course in schedule:
+        try:
+            print(f"Class: {course.courseID} {course.code}")
+        except AttributeError:
+            print(f"{clas.type} Gen Ed")
+
+
+    user.credit["IP"].extend(schedule)
+    user.credit["Completed"].extend(user.credit["IP"])
+
+    
+    test.alt_update()
+    schedule2 : List[Course] = test.alt_schedule_semester()
+    print("-------------Semester 1-------------") # Note that this schedule will NOT work right now. Reasons below.
+    for course in schedule:
+        try:
+            print(f"Class: {course.courseID} {course.code}")
+        except AttributeError:
+            print(f"{clas.type} Gen Ed")
+    print("-------------Semester 2-------------") # Note that this schedule will NOT work right now. Reasons below.
+    for course in schedule2:
         try:
             print(f"Class: {course.courseID} {course.code}")
         except AttributeError:
