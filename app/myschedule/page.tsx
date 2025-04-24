@@ -181,6 +181,4 @@ function SchedulePage() {
   );
 }
 
-export default function Page() {
-  return <SchedulePage />;
-}
+export default SchedulePage;
