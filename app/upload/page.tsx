@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { createClient } from "@supabase/supabase-js";
+import { getLocalEmail, setLocalTranscript } from "../../utils/localStorage";
 
 interface Course {
   title: string;
@@ -83,6 +85,60 @@ export default function UploadPage() {
       if (response.ok && result.data) {
         setJsonData(result.data);
         setError(null);
+        
+        // Save the transcript data to local storage and Supabase
+        const transcriptData = formatTranscriptData(result.data);
+        setLocalTranscript(transcriptData);
+        
+        // Get user email
+        const email = getLocalEmail();
+        
+        // Save to Supabase if email exists
+        if (email) {
+          // First check if a profile with this email already exists
+          const { data: existingProfile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("email", email)
+            .maybeSingle();
+          
+          let error;
+          
+          if (existingProfile) {
+            // Update existing profile
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update({
+                credit: JSON.stringify(transcriptData),
+                updated_at: new Date().toISOString()
+              })
+              .eq("email", email);
+            
+            error = updateError;
+          } else {
+            // Insert new profile
+            const { error: insertError } = await supabase
+              .from("profiles")
+              .insert({
+                email: email,
+                curriculum: "CSCCYB",
+                credit: JSON.stringify(transcriptData),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+            
+            error = insertError;
+          }
+          
+          if (error) {
+            console.error(error);
+            alert('Transcript data parsed successfully, but there was an error saving your data: ' + error.message);
+          } else {
+            alert('Transcript uploaded and saved successfully!');
+          }
+        } else {
+          alert('Transcript uploaded and saved! Add email in profile to save to your email.');
+        }
       } else {
         setError(result.error || 'No data to display.');
       }
@@ -111,8 +167,71 @@ export default function UploadPage() {
     setManualEntries(prev => prev.filter((_, i) => i !== indexToRemove));
   };
 
+  // Supabase client
+  const supabaseUrl = "https://yutarvvbovvomsbtegrk.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1dGFydnZib3Z2b21zYnRlZ3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5NzcwOTEsImV4cCI6MjA2MDU1MzA5MX0.07f-gbofDPAbeu2UGOAH4DSn2x1YF_5Z4qsKRhKPeMs";
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Convert transcript data to the required format
+  const formatTranscriptData = (entries: Entry[] | TranscriptRow[]) => {
+    // Group entries by semester
+    const semesters: Record<string, string[]> = {};
+    
+    if (activeTab === 'manual') {
+      // Handle manual entries
+      const manualData = entries as Entry[];
+      manualData.forEach(entry => {
+        const semesterName = entry.semester;
+        const courseCode = `${entry.dept} ${entry.code}`;
+        
+        if (!semesters[semesterName]) {
+          semesters[semesterName] = [];
+        }
+        
+        semesters[semesterName].push(courseCode);
+      });
+    } else {
+      // Handle uploaded transcript data
+      const uploadData = entries as TranscriptRow[];
+      uploadData.forEach(row => {
+        const semesterName = row.SEMESTER;
+        const courseCode = `${row.DEPT} ${row.CRSE}`;
+        
+        if (!semesters[semesterName]) {
+          semesters[semesterName] = [];
+        }
+        
+        semesters[semesterName].push(courseCode);
+      });
+    }
+    
+    // Convert to sequential semester numbering (Semester 1, Semester 2, etc.)
+    const orderedSemesters = Object.keys(semesters).sort();
+    const completedSemesters = orderedSemesters.map((semester, index) => {
+      const semesterNumber = index + 1;
+      // Format courses with proper quotes (no double quotes)
+      const courses = semesters[semester].map(c => `"${c}"`); 
+      return 'Semester ' + semesterNumber + ':[' + courses.join(', ') + ']';
+    });
+    
+    return {
+      Completed: completedSemesters,
+      IP: []
+    };
+  };
+
   const handleExport = async () => {
     try {
+      // Format the transcript data
+      const transcriptData = formatTranscriptData(manualEntries);
+      
+      // Save to local storage
+      setLocalTranscript(transcriptData);
+      
+      // Get user email
+      const email = getLocalEmail();
+      
+      // Also save to API for local processing
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -120,12 +239,55 @@ export default function UploadPage() {
         },
         body: JSON.stringify({ entries: manualEntries })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Export failed');
-      alert('Export successful!');
+      
+      // Save to Supabase if email exists
+      if (email) {
+        // First check if a profile with this email already exists
+        const { data: existingProfile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("email", email)
+          .maybeSingle();
+        
+        let error;
+        
+        // For JSONB column type, we need to pass the object directly
+        // No need for string manipulation or extra escaping
+        
+        if (existingProfile) {
+          // Update existing profile
+          const { error: updateError } = await supabase
+            .from("profiles")
+            .update({ 
+              credit: transcriptData, // Pass the object directly for JSONB column
+              updated_at: new Date().toISOString()
+            })
+            .eq("email", email);
+          
+          error = updateError;
+        } else {
+          // Insert new profile with minimal data
+          const { error: insertError } = await supabase
+            .from("profiles")
+            .insert({
+              email: email,
+              credit: transcriptData, // Pass the object directly for JSONB column
+              curriculum: "CSCCYB", // Default curriculum
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          
+          error = insertError;
+        }
+        
+        if (error) throw error;
+        alert('Transcript saved successfully to both device and cloud!');
+      } else {
+        alert('Transcript saved to device! Add email in profile to save to cloud.');
+      }
     } catch (err) {
       console.error(err);
-      alert('Export failed.');
+      alert('Error saving transcript: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
