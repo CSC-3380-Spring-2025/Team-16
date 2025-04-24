@@ -99,26 +99,17 @@ function SchedulePage() {
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
 
   useEffect(() => {
-  const fetchData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const res = await fetch(`/api/schedule?email=${user.email}`);
-    const completedSemesters = await res.json();
-
-    const formatted = Object.entries(completedSemesters).map(([semester, courseCodes]) => ({
-      term: semester,
-      courses: (courseCodes as string[]).map(code => ({
-        code,
-        title: "Course Title Placeholder", // replace with real title from Course Catalog if needed
-        credits: 3 // placeholder
-      }))
-    }));
-
-    setScheduleData(formatted);
-  };
-
-  fetchData();
-}, []);
-
+    const fetchData = async () => {
+      const user = await supabase.auth.getUser();
+      const scheduleRes = await fetch(`/api/schedule?user_id=${user.data.user.id}`);
+      const recommendedRes = await fetch(`/api/recommendations?user_id=${user.data.user.id}`);
+      const scheduleJson = await scheduleRes.json();
+      const recommendedJson = await recommendedRes.json();
+      setScheduleData(scheduleJson);
+      setRecommendations(recommendedJson);
+    };
+    fetchData();
+  }, []);
 
   const toggleCourse = (courseCode: string) => {
     setSelectedCourses((prev) =>
