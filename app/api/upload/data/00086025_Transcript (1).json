@@ -1,0 +1,322 @@
+[
+  {
+    "DEPT": "ENGR",
+    "CRSE": "1050",
+    "TITLE": "INTRO TO ENGINEERING",
+    "GR": "Communication Intensive : Written and Spoken",
+    "CARR": "B+",
+    "EARN": "2.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2019"
+  },
+  {
+    "DEPT": "EDCI",
+    "CRSE": "1001",
+    "TITLE": "INTRO TO COLL STUDY",
+    "GR": "A+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2019"
+  },
+  {
+    "DEPT": "ENGL",
+    "CRSE": "1001",
+    "TITLE": "ENGL COMPOSITION",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2019"
+  },
+  {
+    "DEPT": "ART",
+    "CRSE": "1001",
+    "TITLE": "INTR TO FINE ARTS",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2022"
+  },
+  {
+    "DEPT": "BIOL",
+    "CRSE": "1001",
+    "TITLE": "GENERAL BIOLOGY",
+    "GR": "B+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2022"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1550",
+    "TITLE": "CALCULUS I",
+    "GR": "C",
+    "CARR": "5.00",
+    "EARN": "5.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2022"
+  },
+  {
+    "DEPT": "ASTR",
+    "CRSE": "1101",
+    "TITLE": "THE SOLAR SYSTEM",
+    "GR": "B+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2023"
+  },
+  {
+    "DEPT": "CPLT",
+    "CRSE": "2202",
+    "TITLE": "INT MODERN WORLD LIT",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2023"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "1350",
+    "TITLE": "COMP SCI I-MJRS",
+    "GR": "Withdrawal",
+    "CARR": "4.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2023"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1552",
+    "TITLE": "AN GEOM&CALCULUS-II",
+    "GR": "C",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2023"
+  },
+  {
+    "DEPT": "WGS",
+    "CRSE": "2500",
+    "TITLE": "INTRO TO WGS",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2023"
+  },
+  {
+    "DEPT": "ASTR",
+    "CRSE": "1102",
+    "TITLE": "STELLAR ASTRONOMY",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "1350",
+    "TITLE": "COMP SCI I-MJRS",
+    "GR": "B-",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "2090",
+    "TITLE": "ELEM DIFF EQ & LIN ALGEBRA",
+    "GR": "Withdrawal",
+    "CARR": "4.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "MUS",
+    "CRSE": "1600",
+    "TITLE": "AMERICAN POP MUSIC",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "PSYC",
+    "CRSE": "2000",
+    "TITLE": "INTR TO PSYC",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "ASTR",
+    "CRSE": "1108",
+    "TITLE": "ASTRONOMY LAB",
+    "GR": "A",
+    "CARR": "1.00",
+    "EARN": "1.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "ASTR",
+    "CRSE": "1109",
+    "TITLE": "ASTRONOMY LAB",
+    "GR": "A+",
+    "CARR": "1.00",
+    "EARN": "1.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CMST",
+    "CRSE": "1061",
+    "TITLE": "FUND OF COMMUNICATN",
+    "GR": "B+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "1351",
+    "TITLE": "COMP SCI II-MJRS",
+    "GR": "B-",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "2259",
+    "TITLE": "DISCRETE STRUCTURES",
+    "GR": "B-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "ENGL",
+    "CRSE": "2000",
+    "TITLE": "ENGLISH COMP",
+    "GR": "A-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "2090",
+    "TITLE": "ELEM DIFF EQ & LIN ALGEBRA",
+    "GR": "Withdrawal",
+    "CARR": "4.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "2090",
+    "TITLE": "ELEM DIFF EQ & LIN ALGEBRA",
+    "GR": "C",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "2262",
+    "TITLE": "NUMERICAL METHODS",
+    "GR": "A-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3102",
+    "TITLE": "ADV DATA STRUCTURES",
+    "GR": "C-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3304",
+    "TITLE": "INTRO TO SYSTM PROG",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3501",
+    "TITLE": "COMP ORGANIZATN/DSN",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "GEOG",
+    "CRSE": "2050",
+    "TITLE": "PHY GEOG ATMOSPHERE",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3200",
+    "TITLE": "ETHICS IN COMPUTING",
+    "GR": "IP",
+    "CARR": "1.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3380",
+    "TITLE": "OBJ ORIENTED DESIGN",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "4101",
+    "TITLE": "PROG LANGUAGES",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  }
+]

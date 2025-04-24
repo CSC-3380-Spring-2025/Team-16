@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
+import { getLocalProfile } from "../../utils/localStorage";
 
 interface Course {
   course: string;
@@ -37,6 +38,7 @@ export default function Page() {
 
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
 
   // Get user data and profile from Supabase
   useEffect(() => {
@@ -50,12 +52,38 @@ export default function Page() {
           .select("*")
           .eq("user_id", user.id)
           .single();
-        
         setProfile(data);
       }
     };
 
     getUser();
+    
+    // Get user's name from local storage
+    const localProfile = getLocalProfile();
+    if (localProfile?.name) {
+      setUserName(localProfile.name);
+    }
+  }, []);
+
+  // Update username when it changes in local storage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const localProfile = getLocalProfile();
+      if (localProfile?.name) {
+        setUserName(localProfile.name);
+      }
+    };
+    
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check periodically for changes
+    const interval = setInterval(handleStorageChange, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   // Search input for courses
@@ -84,7 +112,7 @@ export default function Page() {
 
       <div className="w-full max-w-5xl px-0 sm:px-6 pt-0 pb-8 relative">
         <div className="flex justify-start">
-          <h1 className="text-2xl font-bold mb-4">Welcome, {profile?.name || (user ? user.email : 'User')}!</h1>
+          <h1 className="text-2xl font-bold mb-4">Welcome, {userName || 'User'}!</h1>
         </div>
       </div>
 
