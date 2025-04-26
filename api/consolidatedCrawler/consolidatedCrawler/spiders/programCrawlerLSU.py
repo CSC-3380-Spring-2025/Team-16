@@ -1,5 +1,4 @@
 
-
 import scrapy
 import json  # For serializing complex data structures
 
@@ -8,7 +7,7 @@ class WebSpider(scrapy.Spider):
     start_urls = [
         'https://catalog.lsu.edu/content.php?catoid=29&navoid=2661'
     ]
-    custom_settings = {
+    custom_settings:dict = {
         'FEED_FORMAT': 'csv',
         'FEED_URI': 'degreeRequirements.csv',
         'FEED_EXPORT_FIELDS': ['ID', 'Program', 'degree', 'type', 'concentration', 'credit', 'hours', 'restrictions']
@@ -19,7 +18,6 @@ class WebSpider(scrapy.Spider):
         self.counter:int = 0  # Initialize the counter to 0
 
     def parse(self, response):
-        # Extract links to individual program pages
         program_links = response.xpath('//a[contains(@href, "preview_program")]/@href').getall()
         for link in program_links:
             absolute_link = response.urljoin(link)
@@ -28,6 +26,186 @@ class WebSpider(scrapy.Spider):
     def parse_program(self, response):
         Hours:int = 120  # default credit hours
         type:str = 'Major' #default type
+        concentrationsList: dict = {
+            "Agricultural Leadership and Development": "ALAD",
+            "Teaching in Formal Education": "TFE",
+            "Agribusiness Analytics": "AGBALY",
+            "Agribusiness Finance": "AGBFIN",
+            "Food Industry Management": "FIM",
+            "International Business": "INTBUS",
+            "Rural Development": "AGBRDV",
+            "Animal Production": "ANPROD",
+            "Animal Products Processing": "APP",
+            "Pre-veterinary Medicine-Animal Science": "PVMANI",
+            "Science & Technology - Animal": "STANI",
+            "Agricultural Pest Management (Entomology Emphasis)": "APME",
+            "Agricultural Pest Management (Plant Pathology Emphasis)": "APMP",
+            "Crop Science": "CROPSC",
+            "Horticulture Sciences": "HRTSCS",
+            "Medicinal Plant Sciences": "MPS",
+            "Soil Science": "SOILSC",
+            "Sustainable Production Systems": "SPS",
+            "Turf & Landscape Management": "TELDMT",
+            "Urban Entomology": "URBENT",
+            "Dietetics": "DIET",
+            "Food Science and Technology": "FST",
+            "Nutrition, Health & Society": "NHS",
+            "Nutritional Sciences/Pre-Medical": "NUTR",
+            "Environmental Analysis & Risk Management": "EARM",
+            "Policy Analysis": "PLCYAN",
+            "Resource Conservation": "RESCON",
+            "Conservation Biology": "CNSVBL",
+            "Ecological Restoration": "ECRSTR",
+            "Fisheries & Aquaculture": "FSHAQU",
+            "Forest Resources Management": "FMGMT",
+            "Preveterinary Medicine - Animal": "PVMEDW",
+            "Watershed Science": "WATERS",
+            "Wetland Science": "WTLNDS",
+            "Wildlife Ecology": "WLDECL",
+            "Wildlife Habitat Conservation & Management": "WHCM",
+            "Apparel Design": "APPARL",
+            "Merchandising": "MERCHD",
+            "Textile Science": "TEXTIL",
+            "Art History": "ARTHS",
+            "Digital Art": "DIGIT",
+            "Graphic Design": "GRDESN",
+            "Studio Art": "START",
+            "Analytics": "ISAA",
+            "Cyber Risk": "ISACR",
+            "Digital Services & Consulting": "ISADSC",
+            "Business Analytics": "BANLYT",
+            "Digital Marketing": "DGMKT",
+            "Human Resource Management": "HRM",
+            "Information Technology Management": "INTECH",
+            "Marketing Analytics": "MIKAN",
+            "Professional Sales": "PASAL",
+            "Empirical Economic Analysis": "EEAE",
+            "Economic Empirical Analysis": "EEAE",
+            "International Management": "INTMGT",
+            "Strategic Leadership": "STRLD",
+            "Applied Coastal Environmental Science": "ACES",
+            "Coastal Meteorology": "COMET",
+            "Deltaic Science": "DELTA",
+            "Environmental Health (3+2 LSUHSC SPH)": "ENHS",
+            "Environmental Law (3+3 LSU Law)": "ENL",
+            "Environmental Science and Research": "ESR",
+            "Cloud Computing and Networking": "CSCCCN",
+            "Computer Science & Second Discipline": "CSCSD",
+            "Cybersecurity": "CSCCYB",
+            "Data Science and Analytics": "CSCDSA",
+            "Software Engineering": "CSCSEG",
+            "Carbon Capture, Utilization and Storage": "CCUS",
+            "Four Year Teacher Certification, Grades 1-5": "1-5CRT",
+            "Holmes Certification, Grades 1-5": "1-5HCT",
+            "Exercise Science and Human Performance": "ESHP",
+            "Health and Physical Education Teacher Certification": "HPEERT",
+            "Human Movement Science": "HUMVT",
+            "Physical Activity and Health": "PHYAH",
+            "Pre-Athletic Training": "PREAT",
+            "Sport Commerce": "SPCOM",
+            "Sport Leadership": "SPLEAD",
+            "Child & Family Studies": "HCFS",
+            "Child Life": "HCL",
+            "Creative Writing": "ENCW",
+            "Literature": "ENLT",
+            "Rhetoric, Writing, and Culture": "RWC",
+            "Secondary Education - English": "ENGLSE",
+            "Secondary Education-FREN": "FRENSE",
+            "Climatology": "CLIMA",
+            "Disaster Science & Management": "DSMA",
+            "Environmental Studies": "EVSA",
+            "Geographic Information Science": "GISA",
+            "Secondary Education-History": "HISTSE",
+            "General Studies": "ISGS",
+            "Individualized Studies": "INDVID",
+            "Informatics": "INFOR",
+            "Organizational Dynamics": "ISOD",
+            "Public Policy Advocacy": "ISPPA",
+            "Urban and Regional Planning": "ISURP",
+            "Africa": "AFRICA",
+            "Asia": "ASIA",
+            "Environment & Development": "ENVDEV",
+            "Europe": "EUROPE",
+            "Global Cultures": "GLBCUL",
+            "Global Diplomacy": "GLBDPL",
+            "Global Studies": "GLOBST",
+            "Latin America and Caribbean": "LTACRB",
+            "Middle East and North Africa": "MOENA",
+            "Classical Civilization": "CLCIV",
+            "Women's, Gender and Sexuality Studies": "WGSS",
+            "Law, Ethics, and Social Justice": "LESJ",
+            "Religious Studies": "REL",
+            "American Government & Politics": "AMGP",
+            "Comparative Government & Politics": "COGP",
+            "International Politics & Law": "INTPL",
+            "Law & Legal Systems": "LLSYS",
+            "Political Theory": "POLTH",
+            "Public Policy and Political Analysis": "PPPA",
+            "Race Ethnicity and Gender": "REG",
+            "Cognitive Neuroscience": "COGNS",
+            "Forensic Psychology": "FORPSY",
+            "History, Theory, & Criticism": "HTC",
+            "Production": "PROD",
+            "Screenwriting": "SCRW",
+            "Criminology": "CRIM",
+            "Secondary Education-SPAN": "SPANSE",
+            "Digital Advertising": "ADV",
+            "Journalism": "JOURN",
+            "Political Communication": "POLCM",
+            "Pre-Law Digital Advertising 3+3": "LADV",
+            "Pre-Law Journalism 3+3": "LJOURN",
+            "Pre-Law Political Communication 3+3": "LPOLCM",
+            "Pre-Law Public Relations 3+3": "LPR",
+            "Public Relations": "PR",
+            "Academic Studies": "ACST",
+            "Arts Administration": "AADMIN",
+            "Brass": "BRASS",
+            "Church Music": "CHURCH",
+            "Composition": "COMP",
+            "Experimental Music & Digital Media": "EMDM",
+            "Intradisciplinary Music": "INTRA",
+            "Jazz": "JAZZ",
+            "Percussion": "PERC",
+            "Piano Pedagogy": "PIAPD",
+            "Piano Performance": "PIAPE",
+            "Strings": "STRNG",
+            "Theatre": "THEA",
+            "Voice": "VOICE",
+            "Woodwind": "WWIND",
+            "Instrumental": "INSTM",
+            "Vocal": "VOCAL",
+            "Design/Technology": "TD&T",
+            "Performance": "PERF",
+            "Physical Theatre": "PHYTH",
+            "Theatre Studies": "THTRST",
+            "Marine Biology": "MARINE",
+            "Secondary Education-BIOL": "BIOLSE",
+            "Biological Chemistry": "BCHEM",
+            "Chemical Physics": "CHEMPH",
+            "Chemistry": "CHEMA",
+            "Chemistry & Second Discipline": "CHEMSD",
+            "Environmental Chemistry": "ENVCHM",
+            "Forensic Chemistry": "CHMFOR",
+            "Polymers": "CHMPLY",
+            "Pre-Health": "CHMPHA",
+            "Secondary Education - Chemistry": "CHEMSE",
+            "Environmental Geology": "ENVGEO",
+            "Geology": "GEOLP",
+            "Geology & Second Discipline": "GEOSD",
+            "Geophysics": "GEOP",
+            "Actuarial Science": "MACTSC",
+            "Computational Mathematics": "MACMP",
+            "Data Science": "DATASC",
+            "Mathematical Statistics": "MATHST",
+            "Mathematics": "MATH",
+            "Mathematics and a Second Discipline": "MASD",
+            "Secondary Education - Mathematics": "MATHSE",
+            "Astronomy": "ASTR",
+            "Medical Physics": "MPHYS",
+            "Physics": "PHYS",
+            "Physics & Second Discipline": "PHYSD",
+            "Secondary Education - Physics": "PHYSSE"
+        }
         programName:str = response.css('title::text').get()
         if programName:
             programName:str = self.clean_program_name(programName.strip())
@@ -50,9 +228,8 @@ class WebSpider(scrapy.Spider):
                         continue
 
                     semesters:list = {}
-                    for div in concentrationDiv.xpath(
-                            './following-sibling::div[@class="custom_leftpad_20"][1]//div[@class="acalog-core"]'):
-                        semesterName = None
+                    for div in concentrationDiv.xpath('./following-sibling::div[@class="custom_leftpad_20"][1]//div[@class="acalog-core"]'):
+                        semesterName:str = None
                         for tag in ['h3', 'h4']:
                             semesterName:str = div.xpath(f'.//{tag}/a[@name]/text()').get()
                             if not semesterName:
@@ -67,11 +244,11 @@ class WebSpider(scrapy.Spider):
 
                         restrictions:list = []
                         allText:str = div.xpath('.//p//em//text()').getall()
-                        cleanedText:str = [text.strip() for text in allText if text.strip()]
+                        cleanedText = [text.strip() for text in allText if text.strip()]
                         startIndex:int = None
                         for i, text in enumerate(cleanedText):
                             if 'will not receive degree credit' in text:
-                                startIndex:int = i + 1
+                                startIndex = i + 1
                                 break
                         if startIndex is not None:
                             endIndex:int = None
@@ -85,6 +262,7 @@ class WebSpider(scrapy.Spider):
                         for li in div.xpath('.//ul//li'):
                             course:str = li.xpath('.//a/text()').get()
                             if course:
+                                course = self.clean_course_name(course)
                                 parts:list = course.split(" ")
                                 course_tag:str = parts[0]
                                 course_code:str = parts[1]
@@ -94,13 +272,17 @@ class WebSpider(scrapy.Spider):
                                 courses.append(course.strip())
                             else:
                                 course:str = li.xpath('.//text()').get()
+                                sup:str = li.xpath('.//sup/text()').get()
+                                if sup:
+                                    course:str = course + '['+sup+']'
                                 if course:
+                                    course = self.clean_course_name(course)
                                     parts:list = course.split(" ")
                                     if parts[0] == "General":
-                                        course = parts[4]
+                                        course:str = parts[4]
                                     courses.append(course.strip())
                                 else:
-                                    nestedCourses:list = li.xpath('.//li//text()').getall()
+                                    nestedCourses = li.xpath('.//li//text()').getall()
                                     if nestedCourses:
                                         courses.extend([c.strip() for c in nestedCourses if c.strip()])
                         if "" in courses:
@@ -111,10 +293,11 @@ class WebSpider(scrapy.Spider):
 
                     if concentrationName and semesters:
                         self.counter += 1
+                        program: str = concentrationsList.get(concentrationName)
                         concentrations[concentrationName]:list = semesters
                         yield {
                             'ID': self.counter,
-                            'Program': programName.split()[0] + concentrationName.split()[0],
+                            'Program': program,
                             'degree': programName,
                             'type': type,
                             'concentration': concentrationName,
@@ -125,9 +308,9 @@ class WebSpider(scrapy.Spider):
             return  # Exit after processing concentrations
 
         # Case 2: Programs without concentrations
-        semesters:list = {}
+        semesters:dict = {}
         for div in response.xpath('.//div[contains(@class, "acalog-core")]'):
-            semesterName = None
+            semesterName:str = None
             for tag in ['h3', 'h4']:
                 semesterName:str = div.xpath(f'.//{tag}/a[@name]/text()').get()
                 if not semesterName:
@@ -142,58 +325,62 @@ class WebSpider(scrapy.Spider):
 
             restrictions:list = []
             allText:str = div.xpath('.//p//em//text()').getall()
-            cleanedText:str = [text.strip() for text in allText if text.strip()]
-            startIndex:int = None
+            cleanedText = [text.strip() for text in allText if text.strip()]
+            startIndex = None
             for i, text in enumerate(cleanedText):
                 if 'will not receive degree credit' in text:
-                    startIndex:int = i + 1
+                    startIndex = i + 1
                     break
             if startIndex is not None:
-                endIndex:int = None
+                endIndex = None
                 for i in range(startIndex, len(cleanedText)):
                     if "." in cleanedText[i]:
                         endIndex = i
                         break
-                restrictions:list = cleanedText[startIndex:endIndex] if endIndex is not None else cleanedText[startIndex:]
+                restrictions = cleanedText[startIndex:endIndex] if endIndex is not None else cleanedText[startIndex:]
 
             courses:list = []
             for li in div.xpath('.//ul//li'):
-                course:str = li.xpath('.//a/text()').get()
+                course = li.xpath('.//a/text()').get()
                 if course:
+                    course = self.clean_course_name(course)
                     parts:list = course.split(" ")
                     course_tag:str = parts[0]
                     course_code:str = parts[1]
                     course:str = course_tag + ' ' + course_code
                     if course_tag == "General":
-                        course:str = parts[4]
+                        course = parts[4]
                     courses.append(course.strip())
                 else:
                     course:str = li.xpath('.//text()').get()
+                    sup:str = li.xpath('.//sup/text()').get()
+                    if sup:
+                        course:str = course + '[' + sup + ']'
                     if course:
-                        parts:list = course.split(" ")
+                        course = self.clean_course_name(course)
+                        parts = course.split(" ")
                         if parts[0] == "General":
-                            course:str = parts[4]
+                            course = parts[4]
                         courses.append(course.strip())
                     else:
-                        nestedCourses:list = li.xpath('.//li//text()').getall()
+                        nestedCourses = li.xpath('.//li//text()').getall()
                         if nestedCourses:
                             courses.extend([c.strip() for c in nestedCourses if c.strip()])
             if "" in courses:
                 emptyIndex = courses.index("")
-                courses:list = courses[emptyIndex + 1:]
+                courses = courses[emptyIndex + 1:]
             if semesterName and courses:
-                semesters[semesterName]:list = courses
-
+                semesters[semesterName] = courses
         if semesters:
             self.counter += 1
             if 'Minor' in programName:
-                type:str = 'Minor'
+                type = 'Minor'
             else:
                 if 'PhD' in programName:
-                    type:str = 'PhD'
+                    type = 'PhD'
                 else:
-                    parts:list = programName.split(" ")
-                    type:str = parts[-1]
+                    parts = programName.split(" ")
+                    type = parts[-1]
             yield {
                 'ID': self.counter,
                 'Program': programName.split()[0],
@@ -205,21 +392,21 @@ class WebSpider(scrapy.Spider):
                 'restrictions': json.dumps(restrictions) if restrictions else None,  # Serialize to JSON string
             }
         else:
-            programDescription:str = response.xpath('//div[contains(@class, "program_description")]//p//text()').getall()
+            programDescription = response.xpath('//div[contains(@class, "program_description")]//p//text()').getall()
             if programDescription:
-                programDescription = " ".join(programDescription).strip()
-                programDescription = self.clean_programDescription(programDescription)
+                programDescription:str = " ".join(programDescription).strip()
+                programDescription:str = self.clean_programDescription(programDescription)
             else:
                 programDescription:str = "No description available"
             self.counter += 1
             if 'Minor' in programName:
-                type:str = 'Minor'
+                type = 'Minor'
             else:
                 if 'PhD' in programName:
-                    type:str = 'PhD'
+                    type = 'PhD'
                 else:
-                    parts:list = programName.split(" ")
-                    type:str = parts[-1]
+                    parts = programName.split(" ")
+                    type = parts[-1]
             yield {
                 'ID': self.counter,
                 'Program': programName.split()[0],
@@ -237,6 +424,12 @@ class WebSpider(scrapy.Spider):
         if program_name.endswith("- Louisiana State University - Modern Campus Catalog™"):
             program_name = program_name.replace("- Louisiana State University - Modern Campus Catalog™", "").strip()
         return program_name
+
+    def clean_course_name(self, course):
+        if not course or not isinstance(course, str):
+            return course
+        course = (course.replace("\u00a0", " ").replace("\\u00a0", " ").replace("u00a0", " ").replace("&nbsp;", " "))
+        return course.strip()
 
     def clean_programDescription(self, programDescription):
         return programDescription.replace("\r\n", " ").replace("\n", " ").replace(" "," ").strip()

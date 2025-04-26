@@ -21,235 +21,235 @@ ID,Category,course title,Credit hours,course ID,class code
 20,,,,,
 21,,,,,
 22,,,,,
-23,Mathematical/Analytical,CSC 1240 Statistics and Graphics with MATLAB (3),3,CSC,1240
-24,Mathematical/Analytical,EXST 2201 Introduction to Statistical Analysis (4),4,EXST,2201
-25,Mathematical/Analytical,MATH 1021 College Algebra (3),3,MATH,1021
-26,Mathematical/Analytical,MATH 1022 Plane Trigonometry (3),3,MATH,1022
-27,Mathematical/Analytical,MATH 1029 Introduction to Contemporary Mathematics (3),3,MATH,1029
-28,Mathematical/Analytical,MATH 1100 The Nature of Mathematics (3),3,MATH,1100
-29,Mathematical/Analytical,MATH 1431 Calculus with Business and Economic Applications (3),3,MATH,1431
-30,Mathematical/Analytical,"MATH 1510 Biomathematics: Calculus, Probability, and Statistics I (5)",5,MATH,1510
-31,Mathematical/Analytical,"MATH 1520 Biomathematics: Calculus, Probability, and Statistics II (4)",4,MATH,1520
-32,Mathematical/Analytical,MATH 1530 Differential Calculus (3),3,MATH,1530
-33,Mathematical/Analytical,MATH 1540 Integral Calculus (3),3,MATH,1540
-34,Mathematical/Analytical,MATH 1550 Differential and Integral Calculus (5),5,MATH,1550
-35,Mathematical/Analytical,MATH 1551 HONORS: Differential and Integral Calculus (5),5,MATH,1551
-36,Mathematical/Analytical,MATH 1552 Analytic Geometry and Calculus II (4),4,MATH,1552
-37,Mathematical/Analytical,MATH 1553 HONORS: Analytic Geometry and Calculus II (4),4,MATH,1553
-38,Mathematical/Analytical,PHIL 1021 Introduction to Logic (3),3,PHIL,1021
-39,,,,,
-40,,,,,
-41,,,,,
-42,Fine,ARCH 2401 Appreciation of Architecture (3),3,ARCH,2401
-43,Fine,ART 1001 Introduction to Fine Arts (3),3,ART,1001
-44,Fine,ARTH 1440 Historical Survey of the Arts (3),3,ARTH,1440
-45,Fine,ARTH 1441 Historical Survey of the Arts (3),3,ARTH,1441
-46,Fine,ARTH 2402 Classical Art and Archaeology (3),3,ARTH,2402
-47,Fine,ARTH 2470 Survey of Modern to Contemporary Art (3),3,ARTH,2470
-48,Fine,HNRS 2021 Colloquium in the Arts (3),3,HNRS,2021
-49,Fine,ID 1051 Introduction to Interior Design (3),3,ID,1051
-50,Fine,LA 1201 Introduction to Landscape Architecture (3),3,LA,1201
-51,Fine,MUS 1400 Louisiana Music (3),3,MUS,1400
-52,Fine,MUS 1600 American Popular Music (3),3,MUS,1600
-53,Fine,MUS 1751 Music Appreciation (3),3,MUS,1751
-54,Fine,MUS 1799 Rudiments of Music (3),3,MUS,1799
-55,Fine,THTR 1020 Introduction to Theatre (3),3,THTR,1020
-56,Fine,THTR 1800 Introduction to Dance (3),3,THTR,1800
-57,Fine,THTR 2022 Introduction to Theatrical Design (3),3,THTR,2022
-58,,,,,
-59,,,,,
-60,,,,,
-61,Humanities,ARAB 1101 Beginning Arabic (4),4,ARAB,1101
-62,Humanities,ARAB 1102 Beginning Arabic (4),4,ARAB,1102
-63,Humanities,ARAB 2101 Intermediate Arabic (3),3,ARAB,2101
-64,Humanities,ARAB 2102 Intermediate Arabic (3),3,ARAB,2102
-65,Humanities,ARCH 2007 History of Architecture I (3),3,ARCH,2007
-66,Humanities,ARCH 2008 History of Architecture II (3),3,ARCH,2008
-67,Humanities,ARTH 2411 Survey of Asian Art (3),3,ARTH,2411
-68,Humanities,CHIN 1101 Beginning Mandarin Chinese (4),4,CHIN,1101
-69,Humanities,CHIN 1102 Beginning Mandarin Chinese (4),4,CHIN,1102
-70,Humanities,CHIN 2001 Intermediate Mandarin Chinese (4),4,CHIN,2001
-71,Humanities,CHIN 2002 Intermediate Mandarin Chinese (4),4,CHIN,2002
-72,Humanities,CHIN 2070 Chinese Cinema (3),3,CHIN,2070
-73,Humanities,CLST 2101 Ancient Greek Civilization (3),3,CLST,2101
-74,Humanities,CLST 2102 Ancient Roman Civilization (3),3,CLST,2102
-75,Humanities,CMST 1061 Fundamentals of Communication (3),3,CMST,1061
-76,Humanities,CMST 2012 Introduction to Film (4),4,CMST,2012
-77,Humanities,CMST 2040 Introduction to Performing Literature (3),3,CMST,2040
-78,Humanities,CMST 2060 Public Speaking (3),3,CMST,2060
-79,Humanities,CMST 2063 Argumentation and Debate (3),3,CMST,2063
-80,Humanities,CPLT 2201 Introduction to World Literary Traditions (3),3,CPLT,2201
-81,Humanities,CPLT 2202 Introduction to Modern World Literature (3),3,CPLT,2202
-82,Humanities,ENGL 2024 Critical Strategies (3),3,ENGL,2024
-83,Humanities,ENGL 2025 Fiction (3),3,ENGL,2025
-84,Humanities,ENGL 2027 Poetry (3),3,ENGL,2027
-85,Humanities,ENGL 2029 Drama (3),3,ENGL,2029
-86,Humanities,ENGL 2123 Studies in Literary Traditions and Themes (3),3,ENGL,2123
-87,Humanities,ENGL 2148 Shakespeare (3),3,ENGL,2148
-88,Humanities,ENGL 2201 Introduction to World Literary Traditions (3),3,ENGL,2201
-89,Humanities,ENGL 2202 Introduction to Modern World Literature (3),3,ENGL,2202
-90,Humanities,ENGL 2220 Major British Authors (3),3,ENGL,2220
-91,Humanities,ENGL 2231 Reading Film (3),3,ENGL,2231
-92,Humanities,ENGL 2270 Major American Authors (3),3,ENGL,2270
-93,Humanities,ENGL 2300 Interpreting Discourse (3),3,ENGL,2300
-94,Humanities,ENGL 2593 Gender and Literature (3),3,ENGL,2593
-95,Humanities,ENGL 2673 Literature and Ethnicity (3),3,ENGL,2673
-96,Humanities,ENGL 2674 Introduction to African-American Literature (3),3,ENGL,2674
-97,Humanities,ENGL 2823 HONORS: Studies in Literary Traditions and Themes (3),3,ENGL,2823
-98,Humanities,ENGL 2824 HONORS: Critical Analysis of Literature (3),3,ENGL,2824
-99,Humanities,FREN 1001 Elementary French (4),4,FREN,1001
-100,Humanities,FREN 1002 Elementary French (4),4,FREN,1002
-101,Humanities,FREN 1201 Elementary Cajun French (4),4,FREN,1201
-102,Humanities,FREN 1202 Elementary Cajun French (4),4,FREN,1202
-103,Humanities,FREN 2101 Intermediate French (3),3,FREN,2101
-104,Humanities,FREN 2102 Intermediate French (3),3,FREN,2102
-105,Humanities,FREN 2155 Readings in French Literature (3),3,FREN,2155
-106,Humanities,FREN 2201 Intermediate Cajun French (3),3,FREN,2201
-107,Humanities,FREN 2202 Intermediate Cajun French (3),3,FREN,2202
-108,Humanities,GERM 1101 Elementary German (4),4,GERM,1101
-109,Humanities,GERM 1102 Elementary German (4),4,GERM,1102
-110,Humanities,GERM 2075 German Civilization (3),3,GERM,2075
-111,Humanities,GERM 2101 Intermediate German (3),3,GERM,2101
-112,Humanities,GERM 2102 Intermediate German (3),3,GERM,2102
-113,Humanities,GREK 1001 Elementary Greek (4),4,GREK,1001
-114,Humanities,GREK 2051 Intermediate Greek (4),4,GREK,2051
-115,Humanities,GREK 2103 Intermediate Greek Prose (3),3,GREK,2103
-116,Humanities,GREK 2104 Intermediate Greek 2 (3),3,GREK,2104
-117,Humanities,HEBR 1001 Beginning Hebrew (4),4,HEBR,1001
-118,Humanities,HEBR 1002 Beginning Hebrew (4),4,HEBR,1002
-119,Humanities,HEBR 2003 Intermediate Hebrew (4),4,HEBR,2003
-120,Humanities,HEBR 2004 Intermediate Hebrew (4),4,HEBR,2004
-121,Humanities,HIST 1001 Western Civilization to 1500 (3),3,HIST,1001
-122,Humanities,HIST 1002 HONORS: Western Civilization to 1500 (3),3,HIST,1002
-123,Humanities,HIST 1003 Western Civilization Since 1500 (3),3,HIST,1003
-124,Humanities,HIST 1004 HONORS: Western Civilization Since 1500 (3),3,HIST,1004
-125,Humanities,HIST 1005 World History to 1500 (3),3,HIST,1005
-126,Humanities,HIST 1007 World History Since 1500 (3),3,HIST,1007
-127,Humanities,HIST 2014 Goddesses to Witches: Women in Europe 500 BCE -1700 CE (3),3,HIST,2014
-128,Humanities,HIST 2020 Medieval Europe (3),3,HIST,2020
-129,Humanities,HIST 2022 Modern Europe (3),3,HIST,2022
-130,Humanities,HIST 2023 The World Since 1960 (3),3,HIST,2023
-131,,,,,
-132,,,,,
-133,Humanities,HIST 2055 The United States to 1865 (3),3,HIST,2055
-134,Humanities,HIST 2056 HONORS: The United States to 1865 (3),3,HIST,2056
-135,Humanities,HIST 2057 The United States from 1865 to the Present (3),3,HIST,2057
-136,Humanities,HIST 2058 HONORS: The United States from 1865 to the Present (3),3,HIST,2058
-137,Humanities,HIST 2061 African American History (3),3,HIST,2061
-138,Humanities,HIST 2065 History of Popular Culture in the United States (3),3,HIST,2065
-139,Humanities,HIST 2075 German Civilization (3),3,HIST,2075
-140,Humanities,HIST 2096 East Asian Civilization Since 1800 (3),3,HIST,2096
-141,Humanities,HIST 2100 Introduction to Asia (3),3,HIST,2100
-142,Humanities,HIST 2125 The History of Premodern Cities (3),3,HIST,2125
-143,Humanities,HIST 2126 Cities in European History since 1500 (3),3,HIST,2126
-144,Humanities,HIST 2160 Contemporary Middle East (3),3,HIST,2160
-145,Humanities,HIST 2184 Introduction to African Civilizations (3),3,HIST,2184
-146,Humanities,HIST 2186 Post-Colonial Africa (3),3,HIST,2186
-147,,,,,
-148,Humanities,HNRS 2000 Critical Analysis (3),3,HNRS,2000
-149,Humanities,HNRS 2012 The 19th Century (3),3,HNRS,2012
-150,Humanities,HNRS 2013 The 20th Century (3),3,HNRS,2013
-151,Humanities,HNRS 2020 Contemporary Studies (3),3,HNRS,2020
-152,Humanities,HNRS 2030 Humanities Colloquium (3),3,HNRS,2030
-153,Humanities,HNRS 2100 The Great Conversations (3),3,HNRS,2100
-154,Humanities,HNRS 2402 Classical Civilization in the Mediterranean World (3),3,HNRS,2402
-155,Humanities,HNRS 2404 Medieval Civilization in Western Europe (3),3,HNRS,2404
-156,Humanities,HNRS 2406 European Civilization from 1400 to 1789 (3),3,HNRS,2406
-157,Humanities,HNRS 2408 Modern Europe (3),3,HNRS,2408
-158,Humanities,ITAL 1001 Elementary Italian (4),4,ITAL,1001
-159,Humanities,ITAL 1002 Elementary Italian (4),4,ITAL,1002
-160,Humanities,ITAL 2101 Intermediate Italian (3),3,ITAL,2101
-161,Humanities,ITAL 2102 Intermediate Italian (3),3,ITAL,2102
-162,Humanities,ITAL 2155 Readings in Italian Literature (3),3,ITAL,2155
-163,Humanities,LA 1203 Views of the American Landscape (3),3,LA,1203
-164,Humanities,LATN 1001 Elementary Latin (4),4,LATN,1001
-165,Humanities,LATN 2051 Intermediate Latin (4),4,LATN,2051
-166,Humanities,LATN 2053 Intermediate Latin (3),3,LATN,2053
-167,Humanities,LATN 2065 Golden Age Narrative Poetry (3),3,LATN,2065
-168,Humanities,LATN 2066 Golden Age Prose (3),3,LATN,2066
-169,Humanities,PHIL 1000 Introduction to Philosophy (3),3,PHIL,1000
-170,Humanities,PHIL 2020 Ethics (3),3,PHIL,2020
-171,Humanities,REL 1000 Religions of the World (3),3,REL,1000
-172,Humanities,REL 1005 New Testament (3),3,REL,1005
-173,Humanities,REL 2000 Introduction to the Study of Religion (3),3,REL,2000
-174,Humanities,REL 2001 Faith and Doubt (3),3,REL,2001
-175,Humanities,REL 2027 Asian Religions (3),3,REL,2027
-176,Humanities,"REL 2029 Judaism, Christianity and Islam (3)",3,REL,2029
-177,Humanities,REL 2033 American Religions (3),3,REL,2033
-178,Humanities,SW 2500 Introduction to LGBTQ+ Studies (3),3,SW,2500
-179,Humanities,SPAN 1101 Elementary Spanish (4),4,SPAN,1101
-180,Humanities,SPAN 1102 Elementary Spanish (4),4,SPAN,1102
-181,Humanities,SPAN 1152 Intensive Beginning Spanish (4),4,SPAN,1152
-182,Humanities,SPAN 2101 Intermediate Spanish (3),3,SPAN,2101
-183,Humanities,SPAN 2102 Intermediate Spanish (3),3,SPAN,2102
-184,Humanities,TAM 2080 Queer Fashion (3),3,TAM,2080
-185,Humanities,"WGS 2500 Introduction to Women’s, Gender, and Sexuality Studies (3)",3,WGS,2500
-186,Humanities,"WGS 2501 HONORS: Introduction to Women’s, Gender, and Sexuality Studies (3)",3,WGS,2501
-187,,,,,
-188,,,,,
-189,,,,,
-190,Social/Behavioral,AAAS 2000 Introduction to African & African American Studies (3),3,AAAS,2000
-191,Social/Behavioral,AAAS 2511 Race Relations (3),3,AAAS,2511
-192,Social/Behavioral,AGEC 2003 Introduction to Agricultural Economics (3),3,AGEC,2003
-193,Social/Behavioral,ANTH 1001 Introduction to Physical Anthropology and Prehistory (3),3,ANTH,1001
-194,Social/Behavioral,ANTH 1003 Introduction to Cultural and Social Anthropology (3),3,ANTH,1003
-195,Social/Behavioral,ANTH 2015 Introduction to Archaeology (3),3,ANTH,2015
-196,Social/Behavioral,ANTH 2050 World Archaeology (3),3,ANTH,2050
-197,Social/Behavioral,ANTH 2051 Introduction to World Ethnography (3),3,ANTH,2051
-198,Social/Behavioral,ANTH 2423 Introduction to Folklore (3),3,ANTH,2423
-199,Social/Behavioral,COMD 2050 Introduction to Language (3),3,COMD,2050
-200,Social/Behavioral,CMST 2010 Interpersonal Communication (3),3,CMST,2010
-201,Social/Behavioral,"EDCI 2001 Education, Schooling and Society (3)",3,EDCI,2001
-202,Social/Behavioral,EDCI 2500 Knowing and Learning in Mathematics and Science (3),3,EDCI,2500
-203,Social/Behavioral,ECON 1001 The Economics of Life (3),3,ECON,1001
-204,Social/Behavioral,ECON 2000 Principles of Microeconomics (3),3,ECON,2000
-205,Social/Behavioral,ECON 2001 HONORS: Principles of Microeconomics (3),3,ECON,2001
-206,Social/Behavioral,ECON 2010 Principles of Macroeconomics (3),3,ECON,2010
-207,Social/Behavioral,ECON 2011 HONORS: Principles of Macroeconomics (3),3,ECON,2011
-208,Social/Behavioral,ECON 2030 Economic Principles (3),3,ECON,2030
-209,Social/Behavioral,ENGL 2423 Introduction to Folklore (3),3,ENGL,2423
-210,Social/Behavioral,"ENGL 2716 Language Diversity, Society, & Power (3)",3,ENGL,2716
-211,Social/Behavioral,ENTR 2000 Innovation and Creativity (3),3,ENTR,2000
-212,Social/Behavioral,GEOG 1001 Human Geography: Americas and Europe (3),3,GEOG,1001
-213,Social/Behavioral,GEOG 1003 Human Geography: Africa and Asia (3),3,GEOG,1003
-214,Social/Behavioral,HNRS 2000 Critical Analysis (3),3,HNRS,2000
-215,Social/Behavioral,HNRS 2012 The 19th Century (3),3,HNRS,2012
-216,Social/Behavioral,HNRS 2013 The 20th Century (3),3,HNRS,2013
-217,Social/Behavioral,HNRS 2020 Contemporary Studies (3),3,HNRS,2020
-218,Social/Behavioral,HNRS 2033 Social Science Colloquium (3),3,HNRS,2033
-219,Social/Behavioral,HNRS 2100 The Great Conversations (3),3,HNRS,2100
-220,Social/Behavioral,HNRS 2402 Classical Civilization in the Mediterranean World (3),3,HNRS,2402
-221,Social/Behavioral,HNRS 2404 Medieval Civilization in Western Europe (3),3,HNRS,2404
-222,Social/Behavioral,HNRS 2406 European Civilization from 1400 to 1789 (3),3,HNRS,2406
-223,Social/Behavioral,HNRS 2408 Modern Europe (3),3,HNRS,2408
-224,Social/Behavioral,INTL 2000 Contemporary Global Issues (3),3,INTL,2000
-225,Social/Behavioral,INTL 2001 HONORS: Contemporary Global Issues (3),3,INTL,2001
-226,Social/Behavioral,KIN 1600 Individual Wellness and Public Health (3),3,KIN,1600
-227,Social/Behavioral,LIS 1000 Information Literacy and Critical Analysis (3),3,LIS,1000
-228,Social/Behavioral,LIS 2000 Introduction to Information & Society (3),3,LIS,2000
-229,Social/Behavioral,LING 2050 Introduction to Language (3),3,LING,2050
-230,Social/Behavioral,"LING 2716 Language Diversity, Society, & Power (3)",3,LING,2716
-231,Social/Behavioral,MC 2000 Introduction to Mass Media (3),3,MC,2000
-232,Social/Behavioral,MC 2025 The Business of Entertainment Media (3),3,MC,2025
-233,Social/Behavioral,"MC 2030 Civic Engagement, Youth and Media (3)",3,MC,2030
-234,Social/Behavioral,POLI 1001 Fundamental Issues of Politics (3),3,POLI,1001
-235,Social/Behavioral,POLI 1002 Honors: Fundamental Issues of Politics (3),3,POLI,1002
-236,Social/Behavioral,"POLI 2030 Civic Engagement, Youth and Media (3)",3,POLI,2030
-237,Social/Behavioral,POLI 2051 American Government (3),3,POLI,2051
-238,Social/Behavioral,POLI 2052 HONORS: American Government (3),3,POLI,2052
-239,Social/Behavioral,POLI 2053 Introduction to Comparative Politics (3),3,POLI,2053
-240,Social/Behavioral,POLI 2057 Introduction to International Politics (3),3,POLI,2057
-241,Social/Behavioral,POLI 2060 Introduction to Political Theory (3),3,POLI,2060
-242,Social/Behavioral,PSYC 2000 Introduction to Psychology (3),3,PSYC,2000
-243,Social/Behavioral,PSYC 2001 HONORS: Introduction to Psychology (3),3,PSYC,2001
-244,Social/Behavioral,SOCL 2001 Introductory Sociology (3),3,SOCL,2001
-245,Social/Behavioral,SOCL 2002 HONORS: Introductory Sociology (3),3,SOCL,2002
-246,Social/Behavioral,SOCL 2010 Louisiana in a Global Context (3),3,SOCL,2010
-247,Social/Behavioral,SOCL 2301 Introduction to Crime Studies (3),3,SOCL,2301
-248,Social/Behavioral,SOCL 2501 Current Social Problems (3),3,SOCL,2501
-249,Social/Behavioral,SOCL 2505 Marriage and Family (3),3,SOCL,2505
-250,Social/Behavioral,SOCL 2511 Race Relations (3),3,SOCL,2511
-251,Social/Behavioral,"WGS 2900 Gender, Race and Nation (3)",3,WGS,2900
+23,Social/Behavioral,AAAS 2000 Introduction to African & African American Studies (3),3,AAAS,2000
+24,Social/Behavioral,AAAS 2511 Race Relations (3),3,AAAS,2511
+25,Social/Behavioral,AGEC 2003 Introduction to Agricultural Economics (3),3,AGEC,2003
+26,Social/Behavioral,ANTH 1001 Introduction to Physical Anthropology and Prehistory (3),3,ANTH,1001
+27,Social/Behavioral,ANTH 1003 Introduction to Cultural and Social Anthropology (3),3,ANTH,1003
+28,Social/Behavioral,ANTH 2015 Introduction to Archaeology (3),3,ANTH,2015
+29,Social/Behavioral,ANTH 2050 World Archaeology (3),3,ANTH,2050
+30,Social/Behavioral,ANTH 2051 Introduction to World Ethnography (3),3,ANTH,2051
+31,Social/Behavioral,ANTH 2423 Introduction to Folklore (3),3,ANTH,2423
+32,Social/Behavioral,COMD 2050 Introduction to Language (3),3,COMD,2050
+33,Social/Behavioral,CMST 2010 Interpersonal Communication (3),3,CMST,2010
+34,Social/Behavioral,"EDCI 2001 Education, Schooling and Society (3)",3,EDCI,2001
+35,Social/Behavioral,EDCI 2500 Knowing and Learning in Mathematics and Science (3),3,EDCI,2500
+36,Social/Behavioral,ECON 1001 The Economics of Life (3),3,ECON,1001
+37,Social/Behavioral,ECON 2000 Principles of Microeconomics (3),3,ECON,2000
+38,Social/Behavioral,ECON 2001 HONORS: Principles of Microeconomics (3),3,ECON,2001
+39,Social/Behavioral,ECON 2010 Principles of Macroeconomics (3),3,ECON,2010
+40,Social/Behavioral,ECON 2011 HONORS: Principles of Macroeconomics (3),3,ECON,2011
+41,Social/Behavioral,ECON 2030 Economic Principles (3),3,ECON,2030
+42,Social/Behavioral,ENGL 2423 Introduction to Folklore (3),3,ENGL,2423
+43,Social/Behavioral,"ENGL 2716 Language Diversity, Society, & Power (3)",3,ENGL,2716
+44,Social/Behavioral,ENTR 2000 Innovation and Creativity (3),3,ENTR,2000
+45,Social/Behavioral,GEOG 1001 Human Geography: Americas and Europe (3),3,GEOG,1001
+46,Social/Behavioral,GEOG 1003 Human Geography: Africa and Asia (3),3,GEOG,1003
+47,Social/Behavioral,HNRS 2000 Critical Analysis (3),3,HNRS,2000
+48,Social/Behavioral,HNRS 2012 The 19th Century (3),3,HNRS,2012
+49,Social/Behavioral,HNRS 2013 The 20th Century (3),3,HNRS,2013
+50,Social/Behavioral,HNRS 2020 Contemporary Studies (3),3,HNRS,2020
+51,Social/Behavioral,HNRS 2033 Social Science Colloquium (3),3,HNRS,2033
+52,Social/Behavioral,HNRS 2100 The Great Conversations (3),3,HNRS,2100
+53,Social/Behavioral,HNRS 2402 Classical Civilization in the Mediterranean World (3),3,HNRS,2402
+54,Social/Behavioral,HNRS 2404 Medieval Civilization in Western Europe (3),3,HNRS,2404
+55,Social/Behavioral,HNRS 2406 European Civilization from 1400 to 1789 (3),3,HNRS,2406
+56,Social/Behavioral,HNRS 2408 Modern Europe (3),3,HNRS,2408
+57,Social/Behavioral,INTL 2000 Contemporary Global Issues (3),3,INTL,2000
+58,Social/Behavioral,INTL 2001 HONORS: Contemporary Global Issues (3),3,INTL,2001
+59,Social/Behavioral,KIN 1600 Individual Wellness and Public Health (3),3,KIN,1600
+60,Social/Behavioral,LIS 1000 Information Literacy and Critical Analysis (3),3,LIS,1000
+61,Social/Behavioral,LIS 2000 Introduction to Information & Society (3),3,LIS,2000
+62,Social/Behavioral,LING 2050 Introduction to Language (3),3,LING,2050
+63,Social/Behavioral,"LING 2716 Language Diversity, Society, & Power (3)",3,LING,2716
+64,Social/Behavioral,MC 2000 Introduction to Mass Media (3),3,MC,2000
+65,Social/Behavioral,MC 2025 The Business of Entertainment Media (3),3,MC,2025
+66,Social/Behavioral,"MC 2030 Civic Engagement, Youth and Media (3)",3,MC,2030
+67,Social/Behavioral,POLI 1001 Fundamental Issues of Politics (3),3,POLI,1001
+68,Social/Behavioral,POLI 1002 Honors: Fundamental Issues of Politics (3),3,POLI,1002
+69,Social/Behavioral,"POLI 2030 Civic Engagement, Youth and Media (3)",3,POLI,2030
+70,Social/Behavioral,POLI 2051 American Government (3),3,POLI,2051
+71,Social/Behavioral,POLI 2052 HONORS: American Government (3),3,POLI,2052
+72,Social/Behavioral,POLI 2053 Introduction to Comparative Politics (3),3,POLI,2053
+73,Social/Behavioral,POLI 2057 Introduction to International Politics (3),3,POLI,2057
+74,Social/Behavioral,POLI 2060 Introduction to Political Theory (3),3,POLI,2060
+75,Social/Behavioral,PSYC 2000 Introduction to Psychology (3),3,PSYC,2000
+76,Social/Behavioral,PSYC 2001 HONORS: Introduction to Psychology (3),3,PSYC,2001
+77,Social/Behavioral,SOCL 2001 Introductory Sociology (3),3,SOCL,2001
+78,Social/Behavioral,SOCL 2002 HONORS: Introductory Sociology (3),3,SOCL,2002
+79,Social/Behavioral,SOCL 2010 Louisiana in a Global Context (3),3,SOCL,2010
+80,Social/Behavioral,SOCL 2301 Introduction to Crime Studies (3),3,SOCL,2301
+81,Social/Behavioral,SOCL 2501 Current Social Problems (3),3,SOCL,2501
+82,Social/Behavioral,SOCL 2505 Marriage and Family (3),3,SOCL,2505
+83,Social/Behavioral,SOCL 2511 Race Relations (3),3,SOCL,2511
+84,Social/Behavioral,"WGS 2900 Gender, Race and Nation (3)",3,WGS,2900
+85,,,,,
+86,,,,,
+87,,,,,
+88,Humanities,ARAB 1101 Beginning Arabic (4),4,ARAB,1101
+89,Humanities,ARAB 1102 Beginning Arabic (4),4,ARAB,1102
+90,Humanities,ARAB 2101 Intermediate Arabic (3),3,ARAB,2101
+91,Humanities,ARAB 2102 Intermediate Arabic (3),3,ARAB,2102
+92,Humanities,ARCH 2007 History of Architecture I (3),3,ARCH,2007
+93,Humanities,ARCH 2008 History of Architecture II (3),3,ARCH,2008
+94,Humanities,ARTH 2411 Survey of Asian Art (3),3,ARTH,2411
+95,Humanities,CHIN 1101 Beginning Mandarin Chinese (4),4,CHIN,1101
+96,Humanities,CHIN 1102 Beginning Mandarin Chinese (4),4,CHIN,1102
+97,Humanities,CHIN 2001 Intermediate Mandarin Chinese (4),4,CHIN,2001
+98,Humanities,CHIN 2002 Intermediate Mandarin Chinese (4),4,CHIN,2002
+99,Humanities,CHIN 2070 Chinese Cinema (3),3,CHIN,2070
+100,Humanities,CLST 2101 Ancient Greek Civilization (3),3,CLST,2101
+101,Humanities,CLST 2102 Ancient Roman Civilization (3),3,CLST,2102
+102,Humanities,CMST 1061 Fundamentals of Communication (3),3,CMST,1061
+103,Humanities,CMST 2012 Introduction to Film (4),4,CMST,2012
+104,Humanities,CMST 2040 Introduction to Performing Literature (3),3,CMST,2040
+105,Humanities,CMST 2060 Public Speaking (3),3,CMST,2060
+106,Humanities,CMST 2063 Argumentation and Debate (3),3,CMST,2063
+107,Humanities,CPLT 2201 Introduction to World Literary Traditions (3),3,CPLT,2201
+108,Humanities,CPLT 2202 Introduction to Modern World Literature (3),3,CPLT,2202
+109,Humanities,ENGL 2024 Critical Strategies (3),3,ENGL,2024
+110,Humanities,ENGL 2025 Fiction (3),3,ENGL,2025
+111,Humanities,ENGL 2027 Poetry (3),3,ENGL,2027
+112,Humanities,ENGL 2029 Drama (3),3,ENGL,2029
+113,Humanities,ENGL 2123 Studies in Literary Traditions and Themes (3),3,ENGL,2123
+114,Humanities,ENGL 2148 Shakespeare (3),3,ENGL,2148
+115,Humanities,ENGL 2201 Introduction to World Literary Traditions (3),3,ENGL,2201
+116,Humanities,ENGL 2202 Introduction to Modern World Literature (3),3,ENGL,2202
+117,Humanities,ENGL 2220 Major British Authors (3),3,ENGL,2220
+118,Humanities,ENGL 2231 Reading Film (3),3,ENGL,2231
+119,Humanities,ENGL 2270 Major American Authors (3),3,ENGL,2270
+120,Humanities,ENGL 2300 Interpreting Discourse (3),3,ENGL,2300
+121,Humanities,ENGL 2593 Gender and Literature (3),3,ENGL,2593
+122,Humanities,ENGL 2673 Literature and Ethnicity (3),3,ENGL,2673
+123,Humanities,ENGL 2674 Introduction to African-American Literature (3),3,ENGL,2674
+124,Humanities,ENGL 2823 HONORS: Studies in Literary Traditions and Themes (3),3,ENGL,2823
+125,Humanities,ENGL 2824 HONORS: Critical Analysis of Literature (3),3,ENGL,2824
+126,Humanities,FREN 1001 Elementary French (4),4,FREN,1001
+127,Humanities,FREN 1002 Elementary French (4),4,FREN,1002
+128,Humanities,FREN 1201 Elementary Cajun French (4),4,FREN,1201
+129,Humanities,FREN 1202 Elementary Cajun French (4),4,FREN,1202
+130,Humanities,FREN 2101 Intermediate French (3),3,FREN,2101
+131,Humanities,FREN 2102 Intermediate French (3),3,FREN,2102
+132,Humanities,FREN 2155 Readings in French Literature (3),3,FREN,2155
+133,Humanities,FREN 2201 Intermediate Cajun French (3),3,FREN,2201
+134,Humanities,FREN 2202 Intermediate Cajun French (3),3,FREN,2202
+135,Humanities,GERM 1101 Elementary German (4),4,GERM,1101
+136,Humanities,GERM 1102 Elementary German (4),4,GERM,1102
+137,Humanities,GERM 2075 German Civilization (3),3,GERM,2075
+138,Humanities,GERM 2101 Intermediate German (3),3,GERM,2101
+139,Humanities,GERM 2102 Intermediate German (3),3,GERM,2102
+140,Humanities,GREK 1001 Elementary Greek (4),4,GREK,1001
+141,Humanities,GREK 2051 Intermediate Greek (4),4,GREK,2051
+142,Humanities,GREK 2103 Intermediate Greek Prose (3),3,GREK,2103
+143,Humanities,GREK 2104 Intermediate Greek 2 (3),3,GREK,2104
+144,Humanities,HEBR 1001 Beginning Hebrew (4),4,HEBR,1001
+145,Humanities,HEBR 1002 Beginning Hebrew (4),4,HEBR,1002
+146,Humanities,HEBR 2003 Intermediate Hebrew (4),4,HEBR,2003
+147,Humanities,HEBR 2004 Intermediate Hebrew (4),4,HEBR,2004
+148,Humanities,HIST 1001 Western Civilization to 1500 (3),3,HIST,1001
+149,Humanities,HIST 1002 HONORS: Western Civilization to 1500 (3),3,HIST,1002
+150,Humanities,HIST 1003 Western Civilization Since 1500 (3),3,HIST,1003
+151,Humanities,HIST 1004 HONORS: Western Civilization Since 1500 (3),3,HIST,1004
+152,Humanities,HIST 1005 World History to 1500 (3),3,HIST,1005
+153,Humanities,HIST 1007 World History Since 1500 (3),3,HIST,1007
+154,Humanities,HIST 2014 Goddesses to Witches: Women in Europe 500 BCE -1700 CE (3),3,HIST,2014
+155,Humanities,HIST 2020 Medieval Europe (3),3,HIST,2020
+156,Humanities,HIST 2022 Modern Europe (3),3,HIST,2022
+157,Humanities,HIST 2023 The World Since 1960 (3),3,HIST,2023
+158,,,,,
+159,,,,,
+160,Humanities,HIST 2055 The United States to 1865 (3),3,HIST,2055
+161,Humanities,HIST 2056 HONORS: The United States to 1865 (3),3,HIST,2056
+162,Humanities,HIST 2057 The United States from 1865 to the Present (3),3,HIST,2057
+163,Humanities,HIST 2058 HONORS: The United States from 1865 to the Present (3),3,HIST,2058
+164,Humanities,HIST 2061 African American History (3),3,HIST,2061
+165,Humanities,HIST 2065 History of Popular Culture in the United States (3),3,HIST,2065
+166,Humanities,HIST 2075 German Civilization (3),3,HIST,2075
+167,Humanities,HIST 2096 East Asian Civilization Since 1800 (3),3,HIST,2096
+168,Humanities,HIST 2100 Introduction to Asia (3),3,HIST,2100
+169,Humanities,HIST 2125 The History of Premodern Cities (3),3,HIST,2125
+170,Humanities,HIST 2126 Cities in European History since 1500 (3),3,HIST,2126
+171,Humanities,HIST 2160 Contemporary Middle East (3),3,HIST,2160
+172,Humanities,HIST 2184 Introduction to African Civilizations (3),3,HIST,2184
+173,Humanities,HIST 2186 Post-Colonial Africa (3),3,HIST,2186
+174,,,,,
+175,Humanities,HNRS 2000 Critical Analysis (3),3,HNRS,2000
+176,Humanities,HNRS 2012 The 19th Century (3),3,HNRS,2012
+177,Humanities,HNRS 2013 The 20th Century (3),3,HNRS,2013
+178,Humanities,HNRS 2020 Contemporary Studies (3),3,HNRS,2020
+179,Humanities,HNRS 2030 Humanities Colloquium (3),3,HNRS,2030
+180,Humanities,HNRS 2100 The Great Conversations (3),3,HNRS,2100
+181,Humanities,HNRS 2402 Classical Civilization in the Mediterranean World (3),3,HNRS,2402
+182,Humanities,HNRS 2404 Medieval Civilization in Western Europe (3),3,HNRS,2404
+183,Humanities,HNRS 2406 European Civilization from 1400 to 1789 (3),3,HNRS,2406
+184,Humanities,HNRS 2408 Modern Europe (3),3,HNRS,2408
+185,Humanities,ITAL 1001 Elementary Italian (4),4,ITAL,1001
+186,Humanities,ITAL 1002 Elementary Italian (4),4,ITAL,1002
+187,Humanities,ITAL 2101 Intermediate Italian (3),3,ITAL,2101
+188,Humanities,ITAL 2102 Intermediate Italian (3),3,ITAL,2102
+189,Humanities,ITAL 2155 Readings in Italian Literature (3),3,ITAL,2155
+190,Humanities,LA 1203 Views of the American Landscape (3),3,LA,1203
+191,Humanities,LATN 1001 Elementary Latin (4),4,LATN,1001
+192,Humanities,LATN 2051 Intermediate Latin (4),4,LATN,2051
+193,Humanities,LATN 2053 Intermediate Latin (3),3,LATN,2053
+194,Humanities,LATN 2065 Golden Age Narrative Poetry (3),3,LATN,2065
+195,Humanities,LATN 2066 Golden Age Prose (3),3,LATN,2066
+196,Humanities,PHIL 1000 Introduction to Philosophy (3),3,PHIL,1000
+197,Humanities,PHIL 2020 Ethics (3),3,PHIL,2020
+198,Humanities,REL 1000 Religions of the World (3),3,REL,1000
+199,Humanities,REL 1005 New Testament (3),3,REL,1005
+200,Humanities,REL 2000 Introduction to the Study of Religion (3),3,REL,2000
+201,Humanities,REL 2001 Faith and Doubt (3),3,REL,2001
+202,Humanities,REL 2027 Asian Religions (3),3,REL,2027
+203,Humanities,"REL 2029 Judaism, Christianity and Islam (3)",3,REL,2029
+204,Humanities,REL 2033 American Religions (3),3,REL,2033
+205,Humanities,SW 2500 Introduction to LGBTQ+ Studies (3),3,SW,2500
+206,Humanities,SPAN 1101 Elementary Spanish (4),4,SPAN,1101
+207,Humanities,SPAN 1102 Elementary Spanish (4),4,SPAN,1102
+208,Humanities,SPAN 1152 Intensive Beginning Spanish (4),4,SPAN,1152
+209,Humanities,SPAN 2101 Intermediate Spanish (3),3,SPAN,2101
+210,Humanities,SPAN 2102 Intermediate Spanish (3),3,SPAN,2102
+211,Humanities,TAM 2080 Queer Fashion (3),3,TAM,2080
+212,Humanities,"WGS 2500 Introduction to Women’s, Gender, and Sexuality Studies (3)",3,WGS,2500
+213,Humanities,"WGS 2501 HONORS: Introduction to Women’s, Gender, and Sexuality Studies (3)",3,WGS,2501
+214,,,,,
+215,,,,,
+216,,,,,
+217,Fine,ARCH 2401 Appreciation of Architecture (3),3,ARCH,2401
+218,Fine,ART 1001 Introduction to Fine Arts (3),3,ART,1001
+219,Fine,ARTH 1440 Historical Survey of the Arts (3),3,ARTH,1440
+220,Fine,ARTH 1441 Historical Survey of the Arts (3),3,ARTH,1441
+221,Fine,ARTH 2402 Classical Art and Archaeology (3),3,ARTH,2402
+222,Fine,ARTH 2470 Survey of Modern to Contemporary Art (3),3,ARTH,2470
+223,Fine,HNRS 2021 Colloquium in the Arts (3),3,HNRS,2021
+224,Fine,ID 1051 Introduction to Interior Design (3),3,ID,1051
+225,Fine,LA 1201 Introduction to Landscape Architecture (3),3,LA,1201
+226,Fine,MUS 1400 Louisiana Music (3),3,MUS,1400
+227,Fine,MUS 1600 American Popular Music (3),3,MUS,1600
+228,Fine,MUS 1751 Music Appreciation (3),3,MUS,1751
+229,Fine,MUS 1799 Rudiments of Music (3),3,MUS,1799
+230,Fine,THTR 1020 Introduction to Theatre (3),3,THTR,1020
+231,Fine,THTR 1800 Introduction to Dance (3),3,THTR,1800
+232,Fine,THTR 2022 Introduction to Theatrical Design (3),3,THTR,2022
+233,,,,,
+234,,,,,
+235,,,,,
+236,Mathematical/Analytical,CSC 1240 Statistics and Graphics with MATLAB (3),3,CSC,1240
+237,Mathematical/Analytical,EXST 2201 Introduction to Statistical Analysis (4),4,EXST,2201
+238,Mathematical/Analytical,MATH 1021 College Algebra (3),3,MATH,1021
+239,Mathematical/Analytical,MATH 1022 Plane Trigonometry (3),3,MATH,1022
+240,Mathematical/Analytical,MATH 1029 Introduction to Contemporary Mathematics (3),3,MATH,1029
+241,Mathematical/Analytical,MATH 1100 The Nature of Mathematics (3),3,MATH,1100
+242,Mathematical/Analytical,MATH 1431 Calculus with Business and Economic Applications (3),3,MATH,1431
+243,Mathematical/Analytical,"MATH 1510 Biomathematics: Calculus, Probability, and Statistics I (5)",5,MATH,1510
+244,Mathematical/Analytical,"MATH 1520 Biomathematics: Calculus, Probability, and Statistics II (4)",4,MATH,1520
+245,Mathematical/Analytical,MATH 1530 Differential Calculus (3),3,MATH,1530
+246,Mathematical/Analytical,MATH 1540 Integral Calculus (3),3,MATH,1540
+247,Mathematical/Analytical,MATH 1550 Differential and Integral Calculus (5),5,MATH,1550
+248,Mathematical/Analytical,MATH 1551 HONORS: Differential and Integral Calculus (5),5,MATH,1551
+249,Mathematical/Analytical,MATH 1552 Analytic Geometry and Calculus II (4),4,MATH,1552
+250,Mathematical/Analytical,MATH 1553 HONORS: Analytic Geometry and Calculus II (4),4,MATH,1553
+251,Mathematical/Analytical,PHIL 1021 Introduction to Logic (3),3,PHIL,1021
 252,,,,,
 253,,,,,
 254,,,,,
