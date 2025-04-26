@@ -5,10 +5,16 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
 import { getLocalProfile } from "../../utils/localStorage";
+import { useAuthCheck } from '../../hooks/useAuthCheck';
 
 interface Course {
   course: string;
   status: string;
+}
+
+interface CourseSuggestion {
+  course: string;
+  reason: string;
 }
 
 // Supabase links
@@ -17,55 +23,82 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Page() {
+  return <DashboardContent />;
+}
+
+// Separate the dashboard content into its own component
+function DashboardContent() {
+  // 1. All hooks must be called unconditionally and in the same order
+  const router = useRouter();
+  
+  // 2. Define all state variables first
   const [roadmap, setRoadmap] = useState<Course[]>([
     { course: "MATH 1550", status: "Completed" },
     { course: "CS 1101", status: "In Progress" },
     { course: "CS 3102", status: "Planned" },
   ]);
-
-  const router = useRouter();
-
-  // Course suggestions
-  const courseSuggestionsData = [
+  
+  const [courseSuggestions, setCourseSuggestions] = useState<CourseSuggestion[]>([
     { course: "CS 4101", reason: "Advanced Programming" },
     { course: "MATH 3001", reason: "Mathematical Foundations" },
     { course: "PHYS 1001", reason: "Basic Physics for CS" },
-  ];
-
-  const [courseSuggestions, setCourseSuggestions] = useState(courseSuggestionsData);
+  ]);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestionSearchTerm, setSuggestionSearchTerm] = useState("");
-
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
-
-  // Get user data and profile from Supabase
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // 3. Use the auth hook
+  const { isAuthenticated, hasLocalProfile, isChecking } = useAuthCheck('/login', false);
+  
+  // 4. Define all effects
+  // Handle authentication redirect
+  useEffect(() => {
+    if (!isChecking && !isAuthenticated && !hasLocalProfile && typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+    
+    if (!isChecking) {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, hasLocalProfile, isChecking]);
+  
+  // Get user data from Supabase
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
 
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .single();
-        setProfile(data);
+        if (user) {
+          const { data } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("user_id", user.id)
+            .single();
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    // Get user's name from local storage
+    const getLocalData = () => {
+      const localProfile = getLocalProfile();
+      if (localProfile?.name) {
+        setUserName(localProfile.name);
       }
     };
 
     getUser();
-    
-    // Get user's name from local storage
-    const localProfile = getLocalProfile();
-    if (localProfile?.name) {
-      setUserName(localProfile.name);
-    }
+    getLocalData();
   }, []);
 
-  // Update username when it changes in local storage
+  // Listen for local storage changes
   useEffect(() => {
     const handleStorageChange = () => {
       const localProfile = getLocalProfile();
@@ -74,29 +107,28 @@ export default function Page() {
       }
     };
     
-    // Listen for storage events
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Check periodically for changes
-    const interval = setInterval(handleStorageChange, 2000);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange);
+      
+      const interval = setInterval(handleStorageChange, 2000);
+      
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }
   }, []);
-
-  // Search input for courses
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  
+  // 5. Define all event handlers
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  // Search input for course suggestions
-  const handleSuggestionSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSuggestionSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSuggestionSearchTerm(e.target.value);
   };
-
-  // Filter courses by search
+  
+  // 6. Derived values
   const filteredCourses = roadmap.filter(course =>
     course.course.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -105,7 +137,20 @@ export default function Page() {
   const filteredSuggestions = courseSuggestions.filter(suggestion =>
     suggestion.course.toLowerCase().includes(suggestionSearchTerm.toLowerCase())
   );
+  
+  // 7. Conditional rendering
+  if (isLoading || isChecking) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
+  // 8. Main render
   return (
     <div className="bg-white text-black min-h-screen flex flex-col items-center relative font-[family-name:var(--font-geist-mono)] px-4 sm:px-6">
       <div className="h-16 w-full"></div>
