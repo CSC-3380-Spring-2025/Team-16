@@ -16,6 +16,7 @@ import {
   getLocalTranscript,
   setLocalTranscript
 } from "../../utils/localStorage";
+import { formatTranscriptForSupabase, parseTranscriptFromSupabase } from "../../utils/transcriptFormatter";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 
@@ -51,7 +52,8 @@ export default function UserProfile() {
             let transcriptData = {};
             if (profileData.credit) {
               try {
-                transcriptData = JSON.parse(profileData.credit);
+                // Use the parser function to handle the transcript data
+                transcriptData = parseTranscriptFromSupabase(profileData.credit);
                 setLocalTranscript(transcriptData);
               } catch (e) {
                 console.error('Error parsing transcript data:', e);
@@ -137,8 +139,8 @@ export default function UserProfile() {
           year: profile.year,
           email: profile.email,
           updated_at: timestamp,
-          // Store transcript data as a JSON string in the credit field
-          credit: JSON.stringify(transcript || {})
+          // Store transcript data properly formatted for Supabase
+          credit: formatTranscriptForSupabase(transcript || { Completed: [], IP: [] })
         };
         
         // Save to Supabase
