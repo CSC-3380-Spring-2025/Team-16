@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
+//import { supabase } from "@/lib/supabaseClient";
 
 // Types
 type Course = {
@@ -100,13 +100,29 @@ function SchedulePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const user = await supabase.auth.getUser();
-      const scheduleRes = await fetch(`/api/schedule?user_id=${user.data.user.id}`);
-      const recommendedRes = await fetch(`/api/recommendations?user_id=${user.data.user.id}`);
+      //const user = await supabase.auth.getUser();
+      //const scheduleRes = await fetch(`/api/schedule?user_id=${user.data.user.id}`);
+      const scheduleRes = await fetch('/api/demo_schedule', {method: 'POST'});
+      //const recommendedRes = await fetch(`/api/recommendations?user_id=${user.data.user.id}`);
       const scheduleJson = await scheduleRes.json();
-      const recommendedJson = await recommendedRes.json();
-      setScheduleData(scheduleJson);
-      setRecommendations(recommendedJson);
+      //const recommendedJson = await recommendedRes.json();
+
+      const scheduleArray: Semester[] = Object.entries(scheduleJson.schedule).map(
+        ([term, courseCodes]) => ({
+          term,
+          courses: Array.isArray(courseCodes)
+            ? courseCodes.map((code) => ({
+                code,
+                title: "Unknown",
+                credits: 3,
+              }))
+            : [],
+        })
+      );
+
+      console.log("Schedule API response:", scheduleJson);
+      setScheduleData(scheduleArray);
+      //setRecommendations(recommendedJson);
     };
     fetchData();
   }, []);
@@ -117,7 +133,7 @@ function SchedulePage() {
     );
   };
 
-  const filteredSchedule = scheduleData.filter((s) => s.term.includes(selectedYear));
+  const filteredSchedule = scheduleData//.filter((s) => s.term.includes(selectedYear));
 
   return (
     <div className="min-h-screen bg-gray-100 text-black p-6">
