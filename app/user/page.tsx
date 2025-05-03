@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import { 
   getLocalProfile, 
   setLocalProfile, 
@@ -16,11 +16,9 @@ import {
   getLocalTranscript,
   setLocalTranscript
 } from "../../utils/localStorage";
-
-// Supabase links
-const supabaseUrl = "https://yutarvvbovvomsbtegrk.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1dGFydnZib3Z2b21zYnRlZ3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5NzcwOTEsImV4cCI6MjA2MDU1MzA5MX0.07f-gbofDPAbeu2UGOAH4DSn2x1YF_5Z4qsKRhKPeMs";
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { formatTranscriptForSupabase, parseTranscriptFromSupabase } from "../../utils/transcriptFormatter";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function UserProfile() {
   // Variables
@@ -34,109 +32,139 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const { user, saveUserProfile } = useAuth();
+  const router = useRouter();
 
   // Get user info when page loads
   useEffect(() => {
-    const savedProfile = getLocalProfile();
-    const email = getLocalEmail();
+    const loadProfile = async () => {
+      // If user is authenticated, try to get profile from Supabase first
+      if (user) {
+        try {
+          const { data: profileData, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+            
+          if (profileData && !error) {
+            // Parse transcript data from credit field if it exists
+            let transcriptData = {};
+            if (profileData.credit) {
+              try {
+                // Use the parser function to handle the transcript data
+                transcriptData = parseTranscriptFromSupabase(profileData.credit);
+                setLocalTranscript(transcriptData);
+              } catch (e) {
+                console.error('Error parsing transcript data:', e);
+              }
+            }
+            
+            // Set profile from Supabase data
+            setProfile({
+              name: profileData.name || "",
+              email: user.email || "",
+              major: profileData.major || "",
+              minor: profileData.minor || "",
+              year: profileData.year || "",
+            });
+            
+            // Also update local storage
+            setLocalProfile({
+              name: profileData.name || "",
+              major: profileData.major || "",
+              minor: profileData.minor || "",
+              year: profileData.year || "",
+            });
+            setLocalEmail(user.email || "");
+            return;
+          }
+        } catch (error) {
+          console.error('Error fetching profile from Supabase:', error);
+        }
+      }
+      
+      // Fallback to local storage if no Supabase data or not authenticated
+      const savedProfile = getLocalProfile();
+      const email = user?.email || getLocalEmail();
+      
+      if (savedProfile) {
+        setProfile({
+          ...savedProfile,
+          email: email || savedProfile.email || "",
+        });
+      } else if (email) {
+        setProfile(prev => ({ ...prev, email }));
+      }
+    };
     
-    if (savedProfile) {
-      setProfile({
-        ...savedProfile,
-        email: email || savedProfile.email || "",
-      });
-    } else if (email) {
-      setProfile(prev => ({ ...prev, email }));
-    }
-  }, []);
+    loadProfile();
+  }, [user]);
 
   // Handles profile save
   const handleSave = async () => {
     setIsSaving(true);
     setMessage({ text: "", type: "" });
     try {
-      const userId = getOrCreateUserId();
       const timestamp = new Date().toISOString();
       const transcript = getLocalTranscript();
       
-      // Save email separately
-      setLocalEmail(profile.email);
+      // Save email separately if not authenticated
+      if (!user) {
+        setLocalEmail(profile.email);
+      }
       
       const profileData = {
         ...profile,
         updated_at: timestamp,
+        transcript: transcript || {}, // Include transcript data
       };
 
-      // Save locally
-      setLocalProfile(profileData);
+      // Save locally regardless of authentication status
+      setLocalProfile({
+        name: profile.name,
+        major: profile.major,
+        minor: profile.minor,
+        year: profile.year,
+      });
 
-      // Also save to Supabase for persistence if email is provided
-      if (profile.email) {
-        // Format transcript data for Supabase
-        const transcriptData = getLocalTranscript();
-        const formattedTranscript = JSON.stringify(transcriptData);
+      // If user is authenticated, save to Supabase using AuthContext
+      if (user) {
+        // Format the data for Supabase
+        const supabaseProfileData = {
+          id: user.id,
+          name: profile.name,
+          major: profile.major,
+          minor: profile.minor,
+          year: profile.year,
+          email: profile.email,
+          updated_at: timestamp,
+          // Store transcript data properly formatted for Supabase
+          credit: formatTranscriptForSupabase(transcript || { Completed: [], IP: [] })
+        };
         
-        // First check if a profile with this email already exists
-        const { data: existingProfile } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("email", profile.email)
-          .maybeSingle();
-        
-        let error;
-        
-        if (existingProfile) {
-          // Update existing profile
-          const { error: updateError } = await supabase
-            .from("profiles")
-            .update({
-              name: profile.name,
-              major: profile.major,
-              minor: profile.minor,
-              year: profile.year,
-              curriculum: "CSCCYB", // Default curriculum for now
-              credit: formattedTranscript, // Store transcript data in credit field as JSON string
-              updated_at: timestamp
-            })
-            .eq("email", profile.email);
-          
-          error = updateError;
-        } else {
-          // Insert new profile
-          const { error: insertError } = await supabase
-            .from("profiles")
-            .insert({
-              email: profile.email,
-              name: profile.name,
-              major: profile.major,
-              minor: profile.minor,
-              year: profile.year,
-              curriculum: "CSCCYB", // Default curriculum for now
-              credit: formattedTranscript, // Store transcript data in credit field as JSON string
-              created_at: timestamp,
-              updated_at: timestamp
-            });
-          
-          error = insertError;
-        }
-
-        if (error) throw error;
+        // Save to Supabase
+        await saveUserProfile(supabaseProfileData);
         setMessage({ text: "Profile saved to both device and cloud!", type: "success" });
+      } else if (profile.email) {
+        // Not authenticated but has email - suggest signing in
+        setMessage({ 
+          text: "Profile saved locally. Sign in with this email to sync to the cloud.", 
+          type: "success" 
+        });
       } else {
         setMessage({ text: "Profile saved to device! Add email to save to cloud.", type: "success" });
       }
       
       setIsEditing(false);
     } catch (error: any) {
-      setMessage({ text: error.message, type: "error" });
+      setMessage({ text: error.message || 'An error occurred while saving', type: "error" });
     } finally {
       setIsSaving(false);
     }
 
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
-
-
 
   // Main profile display
   return (
@@ -156,29 +184,12 @@ export default function UserProfile() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile</h1>
-              <p className="text-gray-500">Your Profile</p>
+              <p className="text-gray-500">{profile.email || "Add your email to sync data"}</p>
             </div>
           </div>
 
           <div className="space-y-6 max-w-xl mx-auto">
-            {/* Email input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              {isEditing ? (
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  className="mt-1 block w-full p-2 border rounded text-sm sm:text-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="your.email@example.com"
-                />
-              ) : (
-                <p className="mt-1 text-gray-900">{profile.email || "Not set"}</p>
-              )}
-              {isEditing && (
-                <p className="text-xs text-gray-500 mt-1">Adding an email allows your profile to be saved to the cloud</p>
-              )}
-            </div>
+            {/* Email section completely removed */}
 
             {/* Name input */}
             <div>
@@ -273,12 +284,23 @@ export default function UserProfile() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="button text-sm px-6 py-2 hover:brightness-95 active:scale-[0.98] transition-all"
-                >
-                  Edit Profile
-                </button>
+                <div className="flex flex-col space-y-3 w-full items-center">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="button text-sm px-6 py-2 hover:brightness-95 active:scale-[0.98] transition-all"
+                  >
+                    Edit Profile
+                  </button>
+                  
+                  {user && (
+                    <button
+                      onClick={() => useAuth().signOut()}
+                      className="button text-sm px-6 py-2 bg-red-50 text-red-600 hover:brightness-95 active:scale-[0.98] transition-all mt-4"
+                    >
+                      Sign Out
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
