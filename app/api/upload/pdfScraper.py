@@ -45,10 +45,20 @@ class PDFScraper:
                         parts = line.split()
                         dept = parts[0]
                         crse = parts[1]
-                        title = " ".join(parts[2:]).replace("-", "").strip()
-                        grade = lines[i + 1] if i + 1 < len(lines) else ""
-                        carr = lines[i + 2] if i + 2 < len(lines) else ""
-                        earn = lines[i + 3] if i + 3 < len(lines) else ""
+                        title_parts = [" ".join(parts[2:]).replace("-", "").strip()]
+                        j = i + 1
+
+                        # Keep appending lines to title until we hit something that looks like a grade
+                        while j < len(lines) and not re.match(r"^[A-F][+-]?$|^Pass$|^Fail$", lines[j], re.IGNORECASE):
+                            title_parts.append(lines[j].strip())
+                            j += 1
+
+                        title = " ".join(title_parts)
+
+                        grade = lines[j] if j < len(lines) else ""
+                        carr = lines[j + 1] if j + 1 < len(lines) else ""
+                        earn = lines[j + 2] if j + 2 < len(lines) else ""
+
                         all_data.append({
                             "DEPT": dept,
                             "CRSE": crse,
@@ -59,8 +69,10 @@ class PDFScraper:
                             "SOURCE": current_section,
                             "SEMESTER": current_semester
                         })
-                        i += 4
+
+                        i = j + 3
                         continue
+
 
                 # Process LSU semester 5-line course blocks
                 if current_section == "semester":
