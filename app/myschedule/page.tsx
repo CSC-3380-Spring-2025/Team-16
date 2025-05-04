@@ -160,7 +160,7 @@ function SchedulePage() {
         <>
           <h1 className="text-3xl font-bold text-center mb-6">Schedule for {selectedYear}</h1>
           <YearSelector selectedYear={selectedYear} onSelect={setSelectedYear} />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {filteredSchedule.map((semester, index) => (
               <SemesterCard key={index} semester={semester} onCourseClick={setActiveCourse} />
             ))}
