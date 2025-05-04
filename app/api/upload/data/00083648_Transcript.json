@@ -1,0 +1,252 @@
+[
+  {
+    "DEPT": "GEOG",
+    "CRSE": "1003",
+    "TITLE": "HUMAN GEOGRAPHY",
+    "GR": "Pass",
+    "CARR": "0.00",
+    "EARN": "3.00",
+    "SOURCE": "exam",
+    "SEMESTER": "Credit by Exam"
+  },
+  {
+    "DEPT": "GEOG",
+    "CRSE": "1001",
+    "TITLE": "HUMAN GEOGRAPHY",
+    "GR": "Pass",
+    "CARR": "0.00",
+    "EARN": "3.00",
+    "SOURCE": "exam",
+    "SEMESTER": "Credit by Exam"
+  },
+  {
+    "DEPT": "HIST",
+    "CRSE": "2057",
+    "TITLE": "The United States from 1865 to the Present",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "external",
+    "SEMESTER": "External Credit"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1021",
+    "TITLE": "COLLEGE ALGEBRA",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "external",
+    "SEMESTER": "External Credit"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1022",
+    "TITLE": "PLANE TRIGONOMETRY",
+    "GR": "A",
+    "CARR": "0.00",
+    "EARN": "0.00",
+    "SOURCE": "external",
+    "SEMESTER": "External Credit"
+  },
+  {
+    "DEPT": "BIOL",
+    "CRSE": "1201",
+    "TITLE": "Biology for Science Majors I",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "external",
+    "SEMESTER": "External Credit"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "1350",
+    "TITLE": "COMP SCI I-MJRS",
+    "GR": "B",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "ENGL",
+    "CRSE": "1001",
+    "TITLE": "ENGL COMPOSITION",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1550",
+    "TITLE": "CALCULUS I",
+    "GR": "B",
+    "CARR": "5.00",
+    "EARN": "5.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "THTR",
+    "CRSE": "1020",
+    "TITLE": "INTRO TO THEATRE",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2023"
+  },
+  {
+    "DEPT": "BIOL",
+    "CRSE": "1002",
+    "TITLE": "GENERAL BIOLOGY",
+    "GR": "C+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "1351",
+    "TITLE": "COMP SCI II-MJRS",
+    "GR": "B-",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "ENGL",
+    "CRSE": "2025",
+    "TITLE": "FICTION",
+    "GR": "C-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "GEOL",
+    "CRSE": "1001",
+    "TITLE": "GEN GEOL PHYSICAL",
+    "GR": "B-",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "1552",
+    "TITLE": "AN GEOM&CALCULUS-II",
+    "GR": "C",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2024"
+  },
+  {
+    "DEPT": "CMST",
+    "CRSE": "2063",
+    "TITLE": "ARGUMENT AND DEBATE",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "2259",
+    "TITLE": "DISCRETE STRUCTURES",
+    "GR": "A",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3102",
+    "TITLE": "ADV DATA STRUCTURES",
+    "GR": "B",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "ECON",
+    "CRSE": "2000",
+    "TITLE": "PRIN MICROECONOMICS",
+    "GR": "B+",
+    "CARR": "3.00",
+    "EARN": "3.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "MATH",
+    "CRSE": "2090",
+    "TITLE": "ELEM DIFF EQ & LIN ALGEBRA",
+    "GR": "C+",
+    "CARR": "4.00",
+    "EARN": "4.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Fall Semester 2024"
+  },
+  {
+    "DEPT": "ACCT",
+    "CRSE": "2001",
+    "TITLE": "INTR FINANCIAL ACCT",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "2262",
+    "TITLE": "NUMERICAL METHODS",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3380",
+    "TITLE": "OBJ ORIENTED DESIGN",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "CSC",
+    "CRSE": "3501",
+    "TITLE": "COMP ORGANIZATN/DSN",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  },
+  {
+    "DEPT": "ENGL",
+    "CRSE": "2000",
+    "TITLE": "ENGLISH COMP 2",
+    "GR": "IP",
+    "CARR": "3.00",
+    "EARN": "0.00",
+    "SOURCE": "semester",
+    "SEMESTER": "Spring Semester 2025"
+  }
+]
