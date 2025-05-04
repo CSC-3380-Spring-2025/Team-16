@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
-import { getLocalProfile } from "../../utils/localStorage";
+import { getLocalProfile, getLocalTranscript } from "../../utils/localStorage";
 import { useAuthCheck } from '../../hooks/useAuthCheck';
 import { parseTranscriptFromSupabase, getLastSemesterCourses, extractCourseInfo } from "../../utils/transcriptFormatter";
 
@@ -45,6 +45,12 @@ function DashboardContent() {
     { course: "MATH 3001", reason: "Mathematical Foundations" },
     { course: "PHYS 1001", reason: "Basic Physics for CS" },
   ]);
+  
+  const [majorProgress, setMajorProgress] = useState({
+    completedCourses: 0,
+    totalCourses: 40, // Default estimate for a typical degree
+    percentage: 0
+  });
   
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestionSearchTerm, setSuggestionSearchTerm] = useState("");
@@ -173,6 +179,17 @@ function DashboardContent() {
             const courseMap = extractCourseInfo(rawData);
             console.log('Extracted course map from local storage:', courseMap);
             
+            // Calculate major progress
+            const completedCoursesCount = calculateCompletedCourses(transcriptData);
+            const majorSpecificTotal = getMajorTotalCourses(localProfile?.major || '');
+            const progressPercentage = Math.min(Math.round((completedCoursesCount / majorSpecificTotal) * 100), 100);
+            
+            setMajorProgress({
+              completedCourses: completedCoursesCount,
+              totalCourses: majorSpecificTotal,
+              percentage: progressPercentage
+            });
+            
             // If we have Completed data, extract the last semester
             if (transcriptData.Completed && transcriptData.Completed.length > 0) {
               const lastSemester = transcriptData.Completed[transcriptData.Completed.length - 1];
@@ -268,6 +285,55 @@ function DashboardContent() {
     );
   }
 
+  // Helper function to calculate completed courses from transcript data
+  const calculateCompletedCourses = (transcriptData: any) => {
+    if (!transcriptData || !transcriptData.Completed || !Array.isArray(transcriptData.Completed)) {
+      return 0;
+    }
+    
+    let totalCompletedCourses = 0;
+    
+    // Loop through all completed semesters
+    transcriptData.Completed.forEach((semester: string) => {
+      const semesterMatch = semester.match(/Sem(?:e)?ster \d+:\[(.*?)\]/);
+      if (semesterMatch && semesterMatch[1]) {
+        // Count the number of courses in this semester
+        const courses = semesterMatch[1].split(',').filter(Boolean);
+        totalCompletedCourses += courses.length;
+      }
+    });
+    
+    return totalCompletedCourses;
+  };
+  
+  // Helper function to get total courses based on major
+  const getMajorTotalCourses = (major: string) => {
+    // Default values based on typical degree requirements
+    const majorRequirements: Record<string, number> = {
+      'Computer Science': 40,
+      'Computer Engineering': 42,
+      'Electrical Engineering': 40,
+      'Mechanical Engineering': 40,
+      'Civil Engineering': 40,
+      'Business': 38,
+      'Psychology': 36,
+      'Biology': 40,
+      'Chemistry': 40,
+      'Physics': 40,
+      'Mathematics': 38,
+      'English': 36,
+      'History': 36,
+      'Political Science': 36,
+      'Sociology': 36,
+      'Art': 36,
+      'Music': 36,
+      'Theatre': 36
+    };
+    
+    // Return the specific major requirement or default to 40
+    return majorRequirements[major] || 40;
+  };
+
   // 8. Main render
   return (
     <div className="bg-white text-black min-h-screen flex flex-col items-center relative font-[family-name:var(--font-geist-mono)] px-4 sm:px-6">
@@ -330,7 +396,7 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           <div className="border-2 border-gray-200 p-6 rounded-lg shadow-sm flex flex-col items-center justify-between" style={{ minHeight: '140px' }}>
             <h2 className="text-lg w-full text-left">Upload Transcript</h2>
             <div className="w-full flex justify-center">
@@ -340,6 +406,23 @@ function DashboardContent() {
               >
                 Upload
               </button>
+            </div>
+          </div>
+          
+          <div className="border-2 border-gray-200 p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg mb-3">Major Progress</h2>
+            <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+              <div 
+                className="bg-purple-600 h-4 rounded-full transition-all duration-500 ease-in-out" 
+                style={{ width: `${majorProgress.percentage}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>{majorProgress.completedCourses} courses completed</span>
+              <span>{majorProgress.percentage}%</span>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              Estimated total: {majorProgress.totalCourses} courses
             </div>
           </div>
         </div>
