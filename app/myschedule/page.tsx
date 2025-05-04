@@ -40,17 +40,39 @@ const YearSelector = ({ selectedYear, onSelect }: { selectedYear: string; onSele
   </div>
 );
 
-const SemesterCard = ({ semester, onCourseClick }: { semester: Semester; onCourseClick: (course: Course) => void }) => (
+const SemesterCard = ({
+  semester,
+  onCourseClick,
+  onCourseRemove,
+  isEditable,
+}: {
+  semester: Semester;
+  onCourseClick: (course: Course) => void;
+  onCourseRemove?: (courseIndex: number, term: string) => void;
+  isEditable?: boolean;
+}) => (
   <div className="bg-white rounded-lg shadow-md p-4">
     <h2 className="text-lg font-semibold mb-4 text-center">{semester.term}</h2>
     <div className="space-y-2">
       {semester.courses.map((course, i) => (
         <div
           key={i}
-          onClick={() => onCourseClick(course)}
-          className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200"
+          className="flex justify-between items-center border border-blue-200 rounded p-2 hover:bg-red-50 transition"
         >
-          <strong>{course.code}</strong> - {course.credits} credits
+          <div
+            onClick={() => onCourseClick(course)}
+            className="cursor-pointer flex-1"
+          >
+            <strong>{course.code}</strong> - {course.credits} credits
+          </div>
+          {isEditable && (
+            <button
+              onClick={() => onCourseRemove?.(i, semester.term)}
+              className="ml-4 text-red-600 hover:underline font-bold"
+            >
+              ✕
+            </button>
+          )}
         </div>
       ))}
     </div>
@@ -59,6 +81,7 @@ const SemesterCard = ({ semester, onCourseClick }: { semester: Semester; onCours
     </div>
   </div>
 );
+
 
 const RecommendedCard = ({ course, selected, toggle }: { course: RecommendedCourse; selected: boolean; toggle: () => void }) => (
   <div
@@ -133,7 +156,21 @@ function SchedulePage() {
     );
   };
 
-  const filteredSchedule = scheduleData//.filter((s) => s.term.includes(selectedYear));
+  const removeCourse = (courseIndex: number, term: string) => {
+  setScheduleData((prev) =>
+    prev.map((sem) =>
+      sem.term === term
+        ? {
+            ...sem,
+            courses: sem.courses.filter((_, i) => i !== courseIndex),
+          }
+        : sem
+    )
+  );
+};
+
+
+ const filteredSchedule = scheduleData.filter((s) => s.term.includes(selectedYear));
 
   return (
     <div className="min-h-screen bg-gray-100 text-black p-6">
@@ -162,8 +199,15 @@ function SchedulePage() {
           <YearSelector selectedYear={selectedYear} onSelect={setSelectedYear} />
           <div className="flex flex-wrap justify-center gap-6">
             {filteredSchedule.map((semester, index) => (
-              <SemesterCard key={index} semester={semester} onCourseClick={setActiveCourse} />
+              <SemesterCard
+                key={index}
+                semester={semester}
+                onCourseClick={setActiveCourse}
+                onCourseRemove={removeCourse}
+                isEditable={parseInt(semester.term) >= 2025}
+              />
             ))}
+
           </div>
         </>
       ) : (
