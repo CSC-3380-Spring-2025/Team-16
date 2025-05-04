@@ -6,6 +6,8 @@ CURRENT_USER_ID: int = 123456
 MAX_HOURS: int = 16
 MIN_HOURS: int = 12
 
+original_user_data : Dict[str, Dict[str, List['Course']]] = {}
+
 class_dictionary : Dict[str, 'Course'] = {}
 
 class Course:
@@ -15,9 +17,12 @@ class Course:
         self.hours: int = 3
         self.courseID: str = courseID
         self.code: int = code
-        self.requisites: Dict[str, List[Union[str, Course]]] = {
+        self.requisites: Dict[str, List[Union[str, Course, Dict[str, List[Union[str, Course]]]]]] = {
+            "Alternative-reqs": [],
             "Prerequisites": [],
             "Corequisites": [],
+            "Replacements": [],
+            "Bypass-method": [],
         }
         self.successors : List[Course] = []
         if isinstance(successor, Course):
@@ -43,7 +48,7 @@ class Course:
         ###print("TESTING ALSO REQUISITES, COURSES REQUISITES: ", self.requisites)
 
         class_dictionary[self.courseID+" "+str(self.code)] = self
-    
+
     def __eq__(self, value : 'Course') -> bool:
         return isinstance(value, Course) and self.courseID == value.courseID and self.code == value.code
 
@@ -99,6 +104,7 @@ class User:
         self.email: str = ""
         self.curric_name: str = ""
         self.credit: Dict[str, List[Union[str, Course]]] = {} # Dict contains "completed" and "IP" (in progress), but it should also log the semester when things were completed
+        original_user_data = self.credit
         self.completed_semesters : List[str] = []
         self.total_hours : int = 0
         self.gen_ed_credit : Dict[str, List[Course]] = {
@@ -149,39 +155,25 @@ class User:
         return self.curriculum
     
     # Basic coreq/prereq. Does not account for alternative reqs or replacement classes
-    def find_missing_credit(self, course: Course) -> Dict[str, List[Course]]:   # In the future, this should be a dict not list of lists
+    def find_missing_credit(self, course: Course) -> Dict[str, List[Course]]:   
         missing_dict : Dict[str, List[Union[Course, List[Course]]]] = {}
         credit_set : set = set(self.credit["Completed"])
         ###print(f"Can user take {course.courseID} {course.code}?")
         if "Prerequisites" in course.requisites:
-            missing_pre : List[Course]
-            prereq_set : set
-            prereq_data : List[Course] = course.requisites["Prerequisites"]
-            if isinstance(prereq_data, list):
-                try: 
-                    if isinstance(prereq_data[0], Course):
-                        prereq_set = {prereq for prereq in prereq_data}
-                        missing_pre : List[Course] = list(prereq_set - credit_set)            
-                        if missing_pre:
-                            missing_dict["Prerequisites"] = missing_pre
-                    elif isinstance(prereq_data[0], list):
-                        for credits in prereq_data:
-                            prereq_set = {prereq for prereq in credits}
-                            missing_pre : List[Course] = list(prereq_set - credit_set)            
-                            if prereq_set == set(missing_pre):
-                                missing_dict["Prerequisites"] = [missing_pre]
-                            else:
-                                prereq_set = set()
-                except IndexError:
-                    prereq_set = set()
-            else: 
-                prereq_set = set()
-            ###print(f"Extracted prereq courses: {prereq_set}")
+            prereq_data = course.requisites["Prerequisites"]
+            missing_pre: List[Union[Course, List[Course]]] = []
 
-            # missing_pre : List[Course] = list(prereq_set - credit_set)            
-            # if missing_pre:
-            #     missing_dict["Prerequisites"] = missing_pre
-        
+            for item in prereq_data:
+                if isinstance(item, Course):  # AND requirement
+                    if item not in credit_set:
+                        missing_pre.append(item)
+                elif isinstance(item, list):  # OR requirement. The difference being in the way the courses are stored. a list of multiple meaning it could be any of them; they all apply
+                    if not any(subitem in credit_set for subitem in item if isinstance(subitem, Course)):
+                        missing_pre.append(item)
+
+            if missing_pre:
+                missing_dict["Prerequisites"] = missing_pre
+
         if "Corequisites" in course.requisites:
             missing_co : List[Course]
             progress_set : set = set(self.credit["IP"])
@@ -193,10 +185,20 @@ class User:
             if missing_co:
                 missing_dict["Corequisites"] = missing_co
         if "Alternative-reqs" in course.requisites:
+            for alt in course.requisites["Alternative-reqs"]:
+                try:
+                    if isinstance(alt, Course) and alt in set(self.credit["Completed"]): # This is so inefficient im dying
+                        if alt in missing_dict["Prerequisites"]:
+                            missing_dict["Prerequisites"].remove(alt)
+                    elif isinstance(alt, Course) and alt in set(self.credit["IP"]):
+                        if alt in missing_dict["Corequisites"]:
+                            missing_dict["Corequisites"].remove(alt)
+                except TypeError:
+                    print("String indeces must be integers, TypeError. alt =", alt)
             pass
         if "Replacements" in course.requisites:
             pass
-        if "Other" in course.requisites: # The 5 if statement streak is killing me
+        if "Other" in course.requisites: # The 5 if statement streak is killing me, but im leaving it here. I dont actually think it'll be used.
             pass
         ###print(f"User is missing: {missing_dict}")
         return missing_dict
@@ -214,7 +216,7 @@ class GenEdCourse(Course):
             self.hours: int = course.hours
             self.courseID: str = course.courseID
             self.code: int = course.code
-            self.requisites: Dict[str, List[str]] = course.requisites
+            self.requisites: Dict[str, List[Union[str, Course]]] = course.requisites
         else: 
             super().__init__(courseID, code)
         self.genEd : GenEd = genEd
@@ -229,7 +231,7 @@ class GenEd: # The "skeleton" implementation of the algorithm doesnt deal with g
         self.find_courses()
     
     def find_courses(self) -> None:
-        with open("api\\genEdScraper\\General_Education_Catalog.csv", newline="", encoding="Windows-1252", errors="ignore") as file:
+        with open("api\\consolidatedCrawler\\General_Education_Catalog.csv", newline="", encoding="Windows-1252", errors="ignore") as file:
             gen_ed_reader = csv.reader(file, delimiter=",")
             next(gen_ed_reader, None)    # jumps over first line (column names)
             for row in gen_ed_reader:
@@ -415,33 +417,27 @@ class Pool:
     def alt_update(self) -> None:
         semesters : List[str] = list(set(self.curriculum.credit.keys())-set(self.completed))
         user_credit: List[Course] = self.user.credit["Completed"]
-        user_progress: List[Course] = self.user.credit["IP"] # PROJECTED PROGRESS WOULD GO SOMEWHERE AROUND HERE IN THE FUTURE
+        user_progress: List[Course] = self.user.credit["IP"] 
         #new_pool : List[Course] = list((set(self.pool)-set(user_credit))-set(user_progress))
         new_pool : List[Course] = []
-        ###print(f"viable semesters for pool: {semesters}")
-        ###print("USER HAS CREDIT FOR: ")
+
         j : int = 0
-        # for i in user_credit:
-        #     j += 1
-        #     ###print(f"{j}. {i.courseID} {i.code}")
-        # ###print("-------------------------CREDIT-END-------------------------")
-        # ###print("OLD POOL: ")
-        # j : int = 0
-        # for i in self.pool:
-        #     j += 1
-        #     ###print(f"{j}. {i.courseID} {i.code}")
-        # ##print("-------------------------POOL-END-------------------------")
-        # ##print("NEW POOL: ")
-        # j : int = 0
-        # for i in new_pool:
-        #     j += 1
-        #     ##print(f"{j}. {i.courseID} {i.code}")
-        # ##print("-------------------------NEW-POOL-END-------------------------")
         for current_semester in semesters:
             for cred in self.curriculum.credit[current_semester]:
-                if isinstance(cred, Course): # As much as I'd like to use extend here, this if statement makes it tricky. Maybe there's a way, but I don't know how.
-                    if cred not in self.user.credit["Completed"] and not self.user.find_missing_credit(cred):
-                        new_pool.append(cred)
+
+                if isinstance(cred, Course): 
+                    if (
+                        isinstance(cred, Course) and
+                        cred not in user_credit and
+                        cred not in user_progress
+                    ):
+                        print(f"Checking: {cred.courseID} {cred.code}")
+                        missing = self.user.find_missing_credit(cred)
+                        print(f" - Missing: {missing}")
+                        if not missing or all(not v for v in missing.values()):
+                            print(f" --> Added to pool: {cred.courseID}")
+                            new_pool.append(cred)
+
                 elif isinstance(cred, GenEd):
                     courses : GenEd = cred.courses
                     for course in courses:
@@ -517,11 +513,18 @@ class Pool:
         #             i+= 1
         #     except IndexError:
         #         return schedule
+
+        if hrs < MAX_HOURS and len(regular_courses) > 0:
+            self.alt_update()
+            self.alt_schedule_semester()
+
+
         while hrs < MAX_HOURS and len(grouped_gened_courses) > 0 and grouped_gened_courses[i][i].hours+hrs <= MAX_HOURS:
             if grouped_gened_courses[i][i] not in self.user.credit["Completed"]: schedule.append(grouped_gened_courses[i][i])
             hrs += grouped_gened_courses[i][i].hours
             i+=1
             
+        
 
         return schedule
 

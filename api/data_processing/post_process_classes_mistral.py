@@ -3,6 +3,7 @@ import time
 import os
 from typing import Dict, Any
 from mistralai import Mistral
+from mistralai.models import sdkerror
 from datetime import datetime, timedelta
 
 API_KEY = "jay0AWPWbhQA9kCTCxQr5eizqrEBpllQ"
@@ -11,22 +12,24 @@ model = "mistral-small-2501"
 client = Mistral(api_key=API_KEY)
 
 
-with open(file="api\scheduling\data.csv", newline="", encoding="Windows-1252", errors="ignore") as file:
+with open(file="api\consolidatedCrawler\course_catalog.csv", newline="", encoding="Windows-1252", errors="ignore") as file:
     class_reader: csv.reader = csv.reader(file)
     last_time : int = 0
     more_rows : bool = True
     skipped : bool = False
+    next(class_reader)
     while more_rows:
         minute_start = datetime.now()
         end_time = minute_start + timedelta(minutes=1)
         while datetime.now() < end_time:
             try:
-                try:
-                    if not skipped:
+                if not skipped:
+                    try:
                         row = next(class_reader)
-                except StopIteration:
-                    more_rows = False
-                    break
+                    except StopIteration:
+                        more_rows = False
+                        break
+                
                 info: str = row[-1]
                 code: int = row[4]
                 course: str = row[1]
@@ -51,8 +54,9 @@ with open(file="api\scheduling\data.csv", newline="", encoding="Windows-1252", e
                     time.sleep(1)
                 else:
                     print("Nope!")
-            except Exception:
+            except sdkerror.SDKError:
                 print("Rate limit reached, waiting until next minute...")
+                print(f"Course rate limited: {row[3]}{code} {course}")
                 remaining = (end_time - datetime.now()).total_seconds()
                 skipped = True
                 if remaining > 0:
