@@ -78,7 +78,103 @@ export const parseTranscriptFromSupabase = (creditField: string | null): Transcr
     console.log('Raw creditField first 50 chars:', creditField.substring(0, 50));
   }
   
-  // Skip parsing entirely and return empty data
-  // This is a temporary solution until we can fix the data in Supabase
-  return emptyResult;
+  try {
+    // Remove outer quotes and parse the JSON
+    const cleanedString = creditField.replace(/^"|"$/g, '');
+    const parsedData = JSON.parse(cleanedString);
+    
+    return {
+      Completed: parsedData.Completed || [],
+      IP: parsedData.IP || []
+    };
+  } catch (error) {
+    console.error('Error parsing transcript data:', error);
+    return emptyResult;
+  }
+};
+
+/**
+ * Gets the courses from the last semester in the transcript
+ * 
+ * @param transcriptData The parsed transcript data
+ * @returns Array of course codes from the last semester
+ */
+export const getLastSemesterCourses = (transcriptData: TranscriptData): string[] => {
+  if (!transcriptData.Completed || transcriptData.Completed.length === 0) {
+    return [];
+  }
+  
+  // Get the last semester entry
+  const lastSemester = transcriptData.Completed[transcriptData.Completed.length - 1];
+  
+  // Extract courses from the semester string
+  const semesterMatch = lastSemester.match(/Sem(?:e)?ster \d+:\[(.*?)\]/);
+  if (semesterMatch && semesterMatch[1]) {
+    // Split the courses and clean them up
+    return semesterMatch[1].split(',').map(course => {
+      return course.replace(/"/g, '').trim();
+    });
+  }
+  
+  return [];
+};
+
+/**
+ * Extracts course information (code and name) from raw transcript text
+ * 
+ * @param rawData The raw transcript data containing course information
+ * @returns Object mapping course codes to course names
+ */
+export const extractCourseInfo = (rawData: any): Record<string, string> => {
+  console.log('Starting to extract course info from raw data');
+  
+  if (!rawData || !rawData.rawText) {
+    console.log('No raw text found in transcript data');
+    return {};
+  }
+  
+  console.log('Raw text length:', rawData.rawText.length);
+  console.log('First 100 chars of raw text:', rawData.rawText.substring(0, 100));
+  
+  const courseMap: Record<string, string> = {};
+  const lines = rawData.rawText.split('\n');
+  console.log('Number of lines in transcript:', lines.length);
+  
+  // Look for lines with course information
+  for (let i = 0; i < lines.length; i++) {
+    // Log every 50th line for debugging
+    if (i % 50 === 0) {
+      console.log(`Sample line ${i}:`, lines[i]);
+    }
+    
+    // Try different patterns to match course information
+    // Pattern 1: Standard format with department, number, name, credits, and grade
+    let codeMatch = lines[i].match(/([A-Z]{2,4})\s+(\d{4})\s+([^\d]+?)\s+(?:\d+\.\d+|\d+)\s+(?:[A-Z][+-]?|CR|IP)/);
+    
+    // Pattern 2: Alternative format that might appear in some transcripts
+    if (!codeMatch) {
+      codeMatch = lines[i].match(/([A-Z]{2,4})\s+(\d{4})\s+([^\d]+?)\s+/);
+    }
+    
+    if (codeMatch) {
+      const dept = codeMatch[1].trim();
+      const num = codeMatch[2].trim();
+      let name = codeMatch[3].trim();
+      
+      // Clean up the name - remove any trailing numbers or special characters
+      name = name.replace(/\s+\d+$/, '').trim();
+      
+      // Create a standardized course code
+      const code = `${dept} ${num}`;
+      courseMap[code] = name;
+      
+      // Log each match we find
+      console.log(`Found course: ${code} - ${name}`);
+    }
+  }
+  
+  // Log the extracted course map for debugging
+  console.log('Extracted course map from transcript:', courseMap);
+  
+  return courseMap;
 };

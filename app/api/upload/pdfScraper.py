@@ -8,15 +8,21 @@ from pathlib import Path
 
 class PDFScraper:
     @staticmethod
-    def extract_text_from_pdf(file_path: str) -> list:
+    def extract_text_from_pdf(file_path: str) -> tuple:
         doc = fitz.open(file_path)
         all_data = []
+        raw_text = []
 
         current_section = None
         current_semester = None
 
         for page in doc:
-            lines = [line.strip() for line in page.get_text("text").split('\n') if line.strip()]
+            # Get the raw text from the page and save it
+            page_text = page.get_text("text")
+            raw_text.append(page_text)
+            
+            # Process the text for structured data extraction
+            lines = [line.strip() for line in page_text.split('\n') if line.strip()]
             i = 0
 
             while i < len(lines):
@@ -101,7 +107,10 @@ class PDFScraper:
 
                 i += 1
 
-        return all_data
+        # Combine all raw text pages into a single string
+        full_raw_text = '\n'.join(raw_text)
+        
+        return all_data, full_raw_text
 
     @staticmethod
     def save_to_json(data: list, output_path: str):

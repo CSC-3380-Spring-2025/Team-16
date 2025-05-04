@@ -56,9 +56,18 @@ export async function POST(request: NextRequest) {
           const jsonPath = path.join(UPLOAD_DIR, `${outputName}.json`);
           if (!fs.existsSync(jsonPath)) throw new Error('JSON output file not found');
           const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+          
+          // Read the raw transcript text from the PDF output
+          const textPath = path.join(UPLOAD_DIR, `${outputName}_text.txt`);
+          let rawText = '';
+          if (fs.existsSync(textPath)) {
+            rawText = fs.readFileSync(textPath, 'utf8');
+          }
+          
           resolve(NextResponse.json({
             success: true,
-            data: jsonData
+            data: jsonData,
+            rawText: rawText
           }));
         } catch (parseError) {
           console.error('Output Error:', parseError);

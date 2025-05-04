@@ -91,6 +91,17 @@ export default function UploadPage() {
         const transcriptData = formatTranscriptData(result.data);
         setLocalTranscript(transcriptData);
         
+        // Save the raw transcript data to localStorage for course name extraction
+        localStorage.setItem('rawTranscriptData', JSON.stringify({
+          rawText: result.rawText || '',
+          data: result.data
+        }));
+        
+        console.log('Saved raw transcript data to localStorage:', {
+          rawText: result.rawText ? result.rawText.substring(0, 100) + '...' : 'No raw text',
+          dataLength: result.data ? result.data.length : 0
+        });
+        
         // Get user email
         const email = getLocalEmail();
         

@@ -6,10 +6,12 @@ import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
 import { getLocalProfile } from "../../utils/localStorage";
 import { useAuthCheck } from '../../hooks/useAuthCheck';
+import { parseTranscriptFromSupabase, getLastSemesterCourses, extractCourseInfo } from "../../utils/transcriptFormatter";
 
 interface Course {
   course: string;
   status: string;
+  title?: string;
 }
 
 interface CourseSuggestion {
@@ -69,6 +71,7 @@ function DashboardContent() {
   // Get user data from Supabase
   useEffect(() => {
     const getUser = async () => {
+      console.log('Fetching user data and processing transcript...');
       try {
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
@@ -80,17 +83,132 @@ function DashboardContent() {
             .eq("user_id", user.id)
             .single();
           setProfile(data);
+          
+          // Extract current classes from transcript data
+          if (data?.credit) {
+            try {
+              // Parse the transcript data
+              const transcriptData = parseTranscriptFromSupabase(data.credit);
+              
+              // Get the last semester's courses
+              const lastSemesterCourses = getLastSemesterCourses(transcriptData);
+              
+              // Get the raw transcript data to extract course names
+              console.log('Checking for rawTranscriptData in localStorage...');
+              const rawTranscriptStr = localStorage.getItem('rawTranscriptData');
+              console.log('rawTranscriptData exists:', !!rawTranscriptStr);
+              
+              if (rawTranscriptStr) {
+                try {
+                  console.log('rawTranscriptStr length:', rawTranscriptStr.length);
+                  console.log('First 100 chars of rawTranscriptStr:', rawTranscriptStr.substring(0, 100));
+                  
+                  // Parse the raw transcript data
+                  const rawData = JSON.parse(rawTranscriptStr);
+                  console.log('rawData structure:', Object.keys(rawData));
+                  
+                  // Extract course names from the transcript text
+                  const courseMap = extractCourseInfo(rawData);
+                  console.log('Extracted course map:', courseMap);
+                  console.log('Number of courses extracted:', Object.keys(courseMap).length);
+                  
+                  // Update the roadmap with the last semester's courses
+                  if (lastSemesterCourses.length > 0) {
+                    console.log('Last semester courses:', lastSemesterCourses);
+                    
+                    // Create a mapping of course codes to course names
+                    const currentClasses = lastSemesterCourses.map(course => {
+                      // Normalize the course code for consistent lookup
+                      const normalizedCode = course.replace(/"/g, '').trim();
+                      
+                      // Look up the course name in our extracted map
+                      const courseName = courseMap[normalizedCode] || '';
+                      
+                      return {
+                        course: normalizedCode,
+                        status: "Current",
+                        title: courseName
+                      };
+                    });
+                    
+                    // Update the roadmap with the current classes
+                    setRoadmap(currentClasses);
+                  }
+                } catch (error) {
+                  console.error('Error processing raw transcript data:', error);
+                }
+              }
+            } catch (error) {
+              console.error('Error processing transcript data:', error);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
 
-    // Get user's name from local storage
+    // Get user's name and transcript data from local storage
     const getLocalData = () => {
       const localProfile = getLocalProfile();
       if (localProfile?.name) {
         setUserName(localProfile.name);
+      }
+      
+      // Check local storage for transcript data
+      if (typeof window !== 'undefined') {
+        const transcriptStr = localStorage.getItem('userTranscript');
+        const rawTranscriptStr = localStorage.getItem('rawTranscriptData');
+        
+        console.log('Checking local storage for transcript data...');
+        console.log('userTranscript exists:', !!transcriptStr);
+        console.log('rawTranscriptData exists:', !!rawTranscriptStr);
+        
+        if (transcriptStr && rawTranscriptStr) {
+          try {
+            const transcriptData = JSON.parse(transcriptStr);
+            const rawData = JSON.parse(rawTranscriptStr);
+            
+            // Extract course names from raw transcript data
+            const courseMap = extractCourseInfo(rawData);
+            console.log('Extracted course map from local storage:', courseMap);
+            
+            // If we have Completed data, extract the last semester
+            if (transcriptData.Completed && transcriptData.Completed.length > 0) {
+              const lastSemester = transcriptData.Completed[transcriptData.Completed.length - 1];
+              const semesterMatch = lastSemester.match(/Sem(?:e)?ster \d+:\[(.*?)\]/);
+              
+              if (semesterMatch && semesterMatch[1]) {
+                // Extract course codes
+                const courses = semesterMatch[1].split(',').map((course: string) => {
+                  return course.replace(/"/g, '').trim();
+                });
+                
+                // Update roadmap
+                if (courses.length > 0) {
+                  console.log('Local storage courses:', courses);
+                  
+                  const currentClasses = courses.map((course: string) => {
+                    // Normalize the course code for consistent lookup
+                    const normalizedCode = course.replace(/"/g, '').trim();
+                    
+                    // Get the course name from our map
+                    const courseName = courseMap[normalizedCode] || '';
+                    
+                    return {
+                      course: normalizedCode,
+                      status: "Current",
+                      title: courseName
+                    };
+                  });
+                  setRoadmap(currentClasses);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error parsing local transcript data:', error);
+          }
+        }
       }
     };
 
@@ -164,7 +282,7 @@ function DashboardContent() {
       <div className="w-full max-w-5xl px-0 sm:px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-5 mt-4">
         <div className="lg:col-span-2 flex flex-col gap-5">
           <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm min-h-[320px]">
-            <h2 className="text-lg sm:text-xl mb-3">Your Course Roadmap</h2>
+            <h2 className="text-lg sm:text-xl mb-3">Your Current Classes</h2>
             <input
               type="text"
               placeholder="Search courses"
@@ -173,13 +291,23 @@ function DashboardContent() {
               className="w-full p-2 border rounded mb-3 text-sm sm:text-md bg-gray-50"
             />
             <ul className="space-y-2 overflow-y-auto max-h-[200px] sm:max-h-[220px]">
-              {filteredCourses.map((item, index) => (
-                <li key={index} className="p-2 border-b">
-                  <span className="text-sm sm:text-md">
-                    <strong>{item.course}</strong> - {item.status}
-                  </span>
-                </li>
-              ))}
+              {(() => {
+                console.log('Filtered courses to display:', filteredCourses);
+                return filteredCourses.map((item, index) => {
+                  console.log(`Course ${index}:`, item.course, 'Title:', item.title);
+                  return (
+                    <li key={index} className="p-2 border-b">
+                      <span className="text-sm sm:text-md">
+                        {item.title ? (
+                          <strong>{item.course} - {item.title}</strong>
+                        ) : (
+                          <strong>{item.course}</strong>
+                        )}
+                      </span>
+                    </li>
+                  );
+                });
+              })()}
             </ul>
           </div>
 
