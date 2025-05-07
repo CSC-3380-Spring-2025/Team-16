@@ -224,9 +224,21 @@ export default function UploadPage() {
       return `Semester ${semesterNumber}:[${courses.join(', ')}]`;
     });
     
+    // Find in-progress courses
+    let inProgressCourses: string[] = [];
+    
+    if (activeTab === 'upload') {
+      // For uploaded transcript, extract courses with IP grade
+      const uploadData = entries as TranscriptRow[];
+      inProgressCourses = uploadData
+        .filter(row => row.GR === 'IP' || row.CARR === 'IP')
+        .map(row => `${row.DEPT} ${row.CRSE}`);
+    }
+    
     return {
       Completed: completedSemesters,
-      IP: []
+      IP: inProgressCourses,
+      _rawData: activeTab === 'upload' ? entries : []
     };
   };
 

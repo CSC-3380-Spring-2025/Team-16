@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
-import { getLocalProfile } from "../../utils/localStorage";
+import { getLocalProfile, getLocalTranscript } from "../../utils/localStorage";
 import { useAuthCheck } from '../../hooks/useAuthCheck';
 
 interface Course {
@@ -50,6 +50,11 @@ function DashboardContent() {
   const [profile, setProfile] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [transcript, setTranscript] = useState<any>(null);
+  const [currentCourses, setCurrentCourses] = useState<string[]>([]);
+  const [completedCourses, setCompletedCourses] = useState<string[]>([]);
+  const [rawTranscriptData, setRawTranscriptData] = useState<any[]>([]);
+  const [totalCreditHours, setTotalCreditHours] = useState<number>(0);
   
   // 3. Use the auth hook
   const { isAuthenticated, hasLocalProfile, isChecking } = useAuthCheck('/login', false);
@@ -92,6 +97,33 @@ function DashboardContent() {
       if (localProfile?.name) {
         setUserName(localProfile.name);
       }
+      
+      // Get transcript data
+      const transcriptData = getLocalTranscript();
+      setTranscript(transcriptData);
+      
+      // Extract current courses (IP) and completed courses
+      if (transcriptData) {
+        setCurrentCourses(transcriptData.IP || []);
+        
+        // Extract all completed courses from all semesters
+        const allCompleted: string[] = [];
+        if (Array.isArray(transcriptData.Completed)) {
+          transcriptData.Completed.forEach((semesterData: string) => {
+            const match = semesterData.match(/Semester \d+:\[(.*)\]/);
+            if (match && match[1]) {
+              const courses = match[1].split(',').map((course: string) => course.trim());
+              allCompleted.push(...courses);
+            }
+          });
+        }
+        setCompletedCourses(allCompleted);
+        
+        // Get raw transcript data if available
+        if (transcriptData._rawData && Array.isArray(transcriptData._rawData)) {
+          setRawTranscriptData(transcriptData._rawData);
+        }
+      }
     };
 
     getUser();
@@ -104,6 +136,33 @@ function DashboardContent() {
       const localProfile = getLocalProfile();
       if (localProfile?.name) {
         setUserName(localProfile.name);
+      }
+      
+      // Update transcript data on storage change
+      const transcriptData = getLocalTranscript();
+      setTranscript(transcriptData);
+      
+      // Extract current courses (IP) and completed courses
+      if (transcriptData) {
+        setCurrentCourses(transcriptData.IP || []);
+        
+        // Extract all completed courses from all semesters
+        const allCompleted: string[] = [];
+        if (Array.isArray(transcriptData.Completed)) {
+          transcriptData.Completed.forEach((semesterData: string) => {
+            const match = semesterData.match(/Semester \d+:\[(.*)\]/);
+            if (match && match[1]) {
+              const courses = match[1].split(',').map((course: string) => course.trim());
+              allCompleted.push(...courses);
+            }
+          });
+        }
+        setCompletedCourses(allCompleted);
+        
+        // Get raw transcript data if available
+        if (transcriptData._rawData && Array.isArray(transcriptData._rawData)) {
+          setRawTranscriptData(transcriptData._rawData);
+        }
       }
     };
     
@@ -138,6 +197,23 @@ function DashboardContent() {
     suggestion.course.toLowerCase().includes(suggestionSearchTerm.toLowerCase())
   );
   
+  // Calculate total credit hours from transcript data
+  const getCreditHours = () => {
+    if (!rawTranscriptData || !Array.isArray(rawTranscriptData) || rawTranscriptData.length === 0) {
+      return 0;
+    }
+    
+    return rawTranscriptData.reduce((total, course) => {
+      // Only count courses that have been completed (not IP)
+      if (course.GR !== 'IP' && course.CARR !== 'IP') {
+        // Use EARN field for credit hours, convert to number
+        const earnedCredits = parseFloat(course.EARN) || 0;
+        return total + earnedCredits;
+      }
+      return total;
+    }, 0);
+  };
+  
   // 7. Conditional rendering
   if (isLoading || isChecking) {
     return (
@@ -163,24 +239,43 @@ function DashboardContent() {
 
       <div className="w-full max-w-5xl px-0 sm:px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-5 mt-4">
         <div className="lg:col-span-2 flex flex-col gap-5">
-          <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm min-h-[320px]">
-            <h2 className="text-lg sm:text-xl mb-3">Your Course Roadmap</h2>
+          <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm" style={{ height: '320px' }}>
+            <h2 className="text-lg sm:text-xl mb-3">Your Current Courses</h2>
             <input
               type="text"
-              placeholder="Search courses"
+              placeholder="Search current courses"
               value={searchTerm}
               onChange={handleSearch}
               className="w-full p-2 border rounded mb-3 text-sm sm:text-md bg-gray-50"
             />
-            <ul className="space-y-2 overflow-y-auto max-h-[200px] sm:max-h-[220px]">
-              {filteredCourses.map((item, index) => (
-                <li key={index} className="p-2 border-b">
-                  <span className="text-sm sm:text-md">
-                    <strong>{item.course}</strong> - {item.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {rawTranscriptData && rawTranscriptData.length > 0 ? (
+              // Display courses from raw transcript data
+              <ul className="space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100% - 80px)' }}>
+                {rawTranscriptData
+                  .filter(course => course.GR === "IP" || course.CARR === "IP") // Find in-progress courses
+                  .filter(course => {
+                    const courseCode = `${course.DEPT} ${course.CRSE}`;
+                    const courseTitle = course.TITLE || "";
+                    return courseCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                           courseTitle.toLowerCase().includes(searchTerm.toLowerCase());
+                  })
+                  .map((course, index) => {
+                    const courseCode = `${course.DEPT} ${course.CRSE}`;
+                    const courseTitle = course.TITLE || "Course";
+                    
+                    return (
+                      <li key={index} className="p-2 border-b text-sm sm:text-md">
+                        <strong>{courseCode}</strong> - {courseTitle}
+                      </li>
+                    );
+                  })}
+              </ul>
+            ) : (
+              // No current courses in transcript
+              <div className="flex flex-col items-center justify-center h-[200px]">
+                <p className="text-sm text-gray-500">No current courses found.</p>
+              </div>
+            )}
           </div>
 
           <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm min-h-[320px]">
@@ -202,16 +297,45 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="flex flex-col">
-          <div className="border-2 border-gray-200 p-6 rounded-lg shadow-sm flex flex-col items-center justify-between" style={{ minHeight: '140px' }}>
-            <h2 className="text-lg w-full text-left">Upload Transcript</h2>
+        <div className="flex flex-col gap-5">
+          {/* Upload Transcript Box */}
+          <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm flex flex-col items-center justify-between" style={{ minHeight: '120px' }}>
+            <h2 className="text-lg w-full text-left mb-3">Upload Transcript</h2>
             <div className="w-full flex justify-center">
               <button 
-                className="button text-sm px-6 py-2 hover:brightness-95 active:scale-[0.98] transition-all"
+                className="button text-sm flex items-center gap-1 hover:brightness-95 active:scale-[0.98] transition-all"
                 onClick={() => router.push('/upload')}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
                 Upload
               </button>
+            </div>
+          </div>
+          
+          {/* Degree Progress Box */}
+          <div className="border-2 border-gray-200 p-4 rounded-lg shadow-sm" style={{ height: '160px' }}>
+            <h2 className="text-lg sm:text-xl mb-3">Degree Progress</h2>
+            <div className="flex flex-col justify-center h-[calc(100%-2rem)]">
+              {/* Progress display */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-600">Progress</span>
+                <span className="text-sm font-medium">{Math.round((getCreditHours() / 120) * 100)}%</span>
+              </div>
+              
+              {/* Progress bar */}
+              <div className="w-full bg-gray-200 rounded-md h-2.5 mb-6">
+                <div 
+                  className="h-2.5 rounded-md" 
+                  style={{ width: `${Math.min(Math.max((getCreditHours() / 120) * 100, 0), 100)}%`, backgroundColor: '#0d93c4' }}
+                ></div>
+              </div>
+              
+              {/* Simple message */}
+              <div className="mt-4 text-xs text-gray-500 text-center">
+                Based on your earned credit hours
+              </div>
             </div>
           </div>
         </div>
