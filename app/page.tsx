@@ -1,9 +1,23 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import NavBar from "./global/components/NavBar";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    // Only redirect after we've checked authentication status
+    if (!isLoading && !user) {
+      router.push('/login');
+    }
+  }, [isLoading, user, router]);
   return (
     <div>
       <NavBar></NavBar>
