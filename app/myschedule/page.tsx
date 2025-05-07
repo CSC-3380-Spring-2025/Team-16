@@ -114,6 +114,11 @@ function SchedulePage() {
       const scheduleJson = await scheduleRes.json();
       //const recommendedJson = await recommendedRes.json();
 
+      if (!scheduleJson.schedule || typeof scheduleJson.schedule !== "object") {
+        console.error("Invalid schedule data", scheduleJson);
+        return;
+      }
+
       const scheduleArray: Semester[] = Object.entries(scheduleJson.schedule).map(
         ([term, courseCodes]) => ({
           term,
@@ -129,6 +134,12 @@ function SchedulePage() {
 
       console.log("Schedule API response:", scheduleJson);
       setScheduleData(scheduleArray);
+
+      if (scheduleArray.length > 0) {
+        const firstYear = scheduleArray[0].term.match(/\d{4}/)?.[0];
+        if (firstYear) setSelectedYear(firstYear);
+      }
+
       //setRecommendations(recommendedJson);
     };
     fetchData();
@@ -140,7 +151,7 @@ function SchedulePage() {
     );
   };
 
-  const filteredSchedule = scheduleData//.filter((s) => s.term.includes(selectedYear));
+  const filteredSchedule = scheduleData.filter((s) => s.term.includes(selectedYear));
 
   return (
     <div className="min-h-screen bg-gray-100 text-black p-6">
