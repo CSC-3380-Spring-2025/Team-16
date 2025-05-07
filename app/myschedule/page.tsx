@@ -28,7 +28,8 @@ const YearSelector = ({ selectedYear, onSelect }: { selectedYear: string; onSele
       <button
         key={year}
         onClick={() => onSelect(year)}
-        className={`px-4 py-2 rounded-full text-sm font-semibold ${
+        className={`px-4 py-2 rounded-full text-sm font-semibold font-mono ${
+
           selectedYear === year
             ? "bg-blue-600 text-white"
             : "bg-white border border-blue-400 text-blue-600"
@@ -42,19 +43,25 @@ const YearSelector = ({ selectedYear, onSelect }: { selectedYear: string; onSele
 
 const SemesterCard = ({ semester, onCourseClick }: { semester: Semester; onCourseClick: (course: Course) => void }) => (
   <div className="bg-white rounded-lg shadow-md p-4">
-    <h2 className="text-lg font-semibold mb-4 text-center">{semester.term}</h2>
+
+    <h2 className="text-lg font-semibold font-mono mb-4 text-center ">{semester.term}</h2>
+
     <div className="space-y-2">
       {semester.courses.map((course, i) => (
         <div
           key={i}
           onClick={() => onCourseClick(course)}
-          className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200"
+
+          className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200 font-mono"
+
         >
           <strong>{course.code}</strong> - {course.credits} credits
         </div>
       ))}
     </div>
-    <div className="mt-4 text-center text-sm font-medium text-gray-700">
+
+    <div className="mt-4 text-center text-sm font-bold font-mono text-gray-700">
+
       Total: {semester.courses.reduce((sum, c) => sum + c.credits, 0)} Hours
     </div>
   </div>
@@ -139,7 +146,9 @@ function SchedulePage() {
     <div className="min-h-screen bg-gray-100 text-black p-6">
       <div className="flex justify-center gap-4 mb-8">
         <button
+
           className={`px-6 py-2 rounded-full font-semibold ${
+
             view === "schedule" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
           }`}
           onClick={() => setView("schedule")}
@@ -147,7 +156,9 @@ function SchedulePage() {
           My Schedule
         </button>
         <button
+
           className={`px-6 py-2 rounded-full font-semibold ${
+
             view === "recommended" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
           }`}
           onClick={() => setView("recommended")}
@@ -158,7 +169,9 @@ function SchedulePage() {
 
       {view === "schedule" ? (
         <>
-          <h1 className="text-3xl font-bold text-center mb-6">Schedule for {selectedYear}</h1>
+
+          <h1 className="text-3xl font-bold font-mono text-center mb-6">Schedule for {selectedYear}</h1>
+
           <YearSelector selectedYear={selectedYear} onSelect={setSelectedYear} />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSchedule.map((semester, index) => (
@@ -168,7 +181,9 @@ function SchedulePage() {
         </>
       ) : (
         <>
-          <h1 className="text-3xl font-bold mb-6 text-center">Recommended Next Classes</h1>
+
+          <h1 className="text-3xl font-bold font-mono mb-6 text-center">Recommended Next Classes</h1>
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recommendations.map((course) => (
               <RecommendedCard
