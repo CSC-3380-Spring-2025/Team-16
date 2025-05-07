@@ -1,119 +1,133 @@
 import fitz  # PyMuPDF
-import pandas as pd
-import os
+import json
 import re
 import sys
-import json
+import os
 from pathlib import Path
 
+
 class PDFScraper:
-    # Get all course abbreviations for LSU
     @staticmethod
-    def load_course_abbreviations(file_path: str) -> set:
-        try:
-            df = pd.read_csv(file_path, header=None)
-            return set(df[0].str.strip().tolist())
-        except Exception as e:
-            print(json.dumps({"error": f"Failed to load abbreviations: {str(e)}"}))
-            sys.exit(1)
+    def extract_text_from_pdf(file_path: str) -> list:
+        doc = fitz.open(file_path)
+        all_data = []
 
-    # Get search terms for semester headers
+        current_section = None
+        current_semester = None
+
+        for page in doc:
+            lines = [line.strip() for line in page.get_text("text").split('\n') if line.strip()]
+            i = 0
+
+            while i < len(lines):
+                line = lines[i]
+
+                # Detect sections
+                if "Credit by Exam" in line:
+                    current_section = "exam"
+                    current_semester = "Credit by Exam"
+                    i += 1
+                    continue
+                elif "External Credit" in line:
+                    current_section = "external"
+                    current_semester = "External Credit"
+                    i += 1
+                    continue
+                elif re.match(r"(Fall|Spring|Summer)\sSemester\s\d{4}", line):
+                    current_section = "semester"
+                    current_semester = line.strip()
+                    i += 1
+                    continue
+
+                # Process external/exam blocks
+                if current_section in ["exam", "external"]:
+                    if re.match(r"^[A-Z]{4}\s\d{4}\s-.*", line):
+                        parts = line.split()
+                        dept = parts[0]
+                        crse = parts[1]
+                        title_parts = [" ".join(parts[2:]).replace("-", "").strip()]
+                        j = i + 1
+
+                        # Keep appending lines to title until we hit something that looks like a grade
+                        while j < len(lines) and not re.match(r"^[A-F][+-]?$|^Pass$|^Fail$", lines[j], re.IGNORECASE):
+                            title_parts.append(lines[j].strip())
+                            j += 1
+
+                        title = " ".join(title_parts)
+
+                        grade = lines[j] if j < len(lines) else ""
+                        carr = lines[j + 1] if j + 1 < len(lines) else ""
+                        earn = lines[j + 2] if j + 2 < len(lines) else ""
+
+                        all_data.append({
+                            "DEPT": dept,
+                            "CRSE": crse,
+                            "TITLE": title,
+                            "GR": grade,
+                            "CARR": carr,
+                            "EARN": earn,
+                            "SOURCE": current_section,
+                            "SEMESTER": current_semester
+                        })
+
+                        i = j + 3
+                        continue
+
+
+                # Process LSU semester 5-line course blocks
+                if current_section == "semester":
+                    # Ensure there are enough lines ahead
+                    if i + 4 < len(lines) and re.match(r"^[A-Z]{3,4}\s\d{4}", lines[i]):
+                        dept_crse = lines[i].split()
+                        title = lines[i + 1]
+                        grade = lines[i + 2]
+                        carr = lines[i + 3]
+                        earn = lines[i + 4]
+
+                        if len(dept_crse) == 2:
+                            dept, crse = dept_crse
+                            all_data.append({
+                                "DEPT": dept,
+                                "CRSE": crse,
+                                "TITLE": title,
+                                "GR": grade,
+                                "CARR": carr,
+                                "EARN": earn,
+                                "SOURCE": "semester",
+                                "SEMESTER": current_semester
+                            })
+                            i += 5
+                            continue
+
+                i += 1
+
+        return all_data
+
     @staticmethod
-    def is_semester_header(line: str) -> bool:
-        return bool(re.search(r'(1ST|2ND|SEM|\d{4}-\d{4})', line))
-
-    # Get search terms for course lines
-    @staticmethod
-    def is_valid_course_line(line: str, abbreviations: set) -> bool:
-        return any(line.startswith(abbr) for abbr in abbreviations)
-
-    # Extract needed text from the PDF
-    @staticmethod
-    def extract_text_from_pdf(file_path: str, abbreviations: set) -> pd.DataFrame:
-        try:
-            doc = fitz.open(file_path)
-            all_semester_dfs = []
-
-            for page in doc:
-                # Split the page into left and right halves
-                width = page.rect.width
-                left_rect = fitz.Rect(0, 0, width / 2, page.rect.height)
-                right_rect = fitz.Rect(width / 2, 0, width, page.rect.height)
-
-                for half in [left_rect, right_rect]:
-                    text = page.get_text("text", clip=half)
-                    lines = [line.strip() for line in text.split('\n') if line.strip()]
-
-                    current_semester = None
-                    current_courses = []
-
-                    for line in lines:
-                        if PDFScraper.is_semester_header(line):
-                            if current_semester and current_courses:
-                                df = pd.DataFrame(current_courses)
-                                df["Semester"] = current_semester
-                                all_semester_dfs.append(df)
-                                current_courses = []
-
-                            current_semester = line
-
-                        elif current_semester and PDFScraper.is_valid_course_line(line, abbreviations):
-                            match = re.match(r'^([A-Z]{2,5})\s+(\d{3,4})\s+(\S+)\s+([\d\.]+)?\s+([\d\.]+)?\s+([\d\.]+)?', line)
-                            if match:
-                                dept, crse, gr, carr, earn, qpts = match.groups()
-                                current_courses.append({
-                                    "DEPT": dept,
-                                    "CRSE": crse,
-                                    "GR": gr,
-                                    "CARR": carr,
-                                    "EARN": earn,
-                                    "QPTS": qpts
-                                })
-
-                    if current_semester and current_courses:
-                        df = pd.DataFrame(current_courses)
-                        df["Semester"] = current_semester
-                        all_semester_dfs.append(df)
-
-            final_df = pd.concat(all_semester_dfs, ignore_index=True)
-            return final_df
-
-        except Exception as e:
-            print(json.dumps({"error": f"PDF processing failed: {str(e)}"}))
-            sys.exit(1)
-
-    # Save to csv
-    @staticmethod
-    def save_to_csv(df: pd.DataFrame, output_path: str):
-        try:
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            df.to_csv(output_path, index=False)
-            print(json.dumps({"success": True, "csv_path": output_path}))
-        except Exception as e:
-            print(json.dumps({"error": f"CSV save failed: {str(e)}"}))
-            sys.exit(1)
+    def save_to_json(data: list, output_path: str):
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2)
+        print(json.dumps({"success": True, "json_path": output_path}))
 
     @staticmethod
     def main(pdf_path: str, output_name: str):
         try:
             base_dir = Path(__file__).parent
-            abbreviations_path = base_dir / "course_abbreviations.csv"
             output_dir = base_dir / "data"
-            output_dir.mkdir(parents=True, exist_ok=True)
+            output_path = output_dir / f"{output_name}.json"
 
-            abbreviations = PDFScraper.load_course_abbreviations(str(abbreviations_path))
-            final_df = PDFScraper.extract_text_from_pdf(pdf_path, abbreviations)
-
-            if final_df.empty:
-                print(json.dumps({"error": "No matching course data found in PDF"}))
+            data = PDFScraper.extract_text_from_pdf(pdf_path)
+            if not data:
+                print(json.dumps({"error": "No course data found in transcript"}))
                 sys.exit(1)
 
-            output_path = output_dir / f"{output_name}.csv"
-            PDFScraper.save_to_csv(final_df, str(output_path))
+            PDFScraper.save_to_json(data, str(output_path))
 
         except Exception as e:
             print(json.dumps({"error": str(e)}))
             sys.exit(1)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
