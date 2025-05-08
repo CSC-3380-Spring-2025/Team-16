@@ -21,7 +21,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 
 export default function UserProfile() {
-  // Variables
+  // State
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -35,10 +35,10 @@ export default function UserProfile() {
   const { user, saveUserProfile } = useAuth();
   const router = useRouter();
 
-  // Get user info when page loads
+  // Load user data
   useEffect(() => {
     const loadProfile = async () => {
-      // If user is authenticated, try to get profile from Supabase first
+      // Uses Supabase if already logged in
       if (user) {
         try {
           const { data: profileData, error } = await supabase
@@ -48,11 +48,10 @@ export default function UserProfile() {
             .single();
             
           if (profileData && !error) {
-            // Parse transcript data from credit field if it exists
+            // Get transcript data
             let transcriptData = {};
             if (profileData.credit) {
               try {
-                // Use the parser function to handle the transcript data
                 transcriptData = parseTranscriptFromSupabase(profileData.credit);
                 setLocalTranscript(transcriptData);
               } catch (e) {
@@ -60,7 +59,7 @@ export default function UserProfile() {
               }
             }
             
-            // Set profile from Supabase data
+            // Update profile
             setProfile({
               name: profileData.name || "",
               email: user.email || "",
@@ -69,7 +68,7 @@ export default function UserProfile() {
               year: profileData.year || "",
             });
             
-            // Also update local storage
+            // Save to local
             setLocalProfile({
               name: profileData.name || "",
               major: profileData.major || "",
@@ -84,7 +83,7 @@ export default function UserProfile() {
         }
       }
       
-      // Fallback to local storage if no Supabase data or not authenticated
+      // Try local storage
       const savedProfile = getLocalProfile();
       const email = user?.email || getLocalEmail();
       
@@ -101,7 +100,7 @@ export default function UserProfile() {
     loadProfile();
   }, [user]);
 
-  // Handles profile save
+  // Save profile
   const handleSave = async () => {
     setIsSaving(true);
     setMessage({ text: "", type: "" });
@@ -109,7 +108,7 @@ export default function UserProfile() {
       const timestamp = new Date().toISOString();
       const transcript = getLocalTranscript();
       
-      // Save email separately if not authenticated
+      // Save email locally
       if (!user) {
         setLocalEmail(profile.email);
       }
@@ -117,10 +116,10 @@ export default function UserProfile() {
       const profileData = {
         ...profile,
         updated_at: timestamp,
-        transcript: transcript || {}, // Include transcript data
+        transcript: transcript || {},
       };
 
-      // Save locally regardless of authentication status
+      // Saves profile locally
       setLocalProfile({
         name: profile.name,
         major: profile.major,
@@ -128,9 +127,9 @@ export default function UserProfile() {
         year: profile.year,
       });
 
-      // If user is authenticated, save to Supabase using AuthContext
+      // Save to cloud if logged in
       if (user) {
-        // Format the data for Supabase
+        // Format for Supabase
         const supabaseProfileData = {
           id: user.id,
           name: profile.name,
@@ -139,15 +138,15 @@ export default function UserProfile() {
           year: profile.year,
           email: profile.email,
           updated_at: timestamp,
-          // Store transcript data properly formatted for Supabase
+          // Store transcript
           credit: formatTranscriptForSupabase(transcript || { Completed: [], IP: [] })
         };
         
-        // Save to Supabase
+        // Save to supabase
         await saveUserProfile(supabaseProfileData);
         setMessage({ text: "Profile saved to both device and cloud!", type: "success" });
       } else if (profile.email) {
-        // Not authenticated but has email - suggest signing in
+        // Has email but not logged in yet
         setMessage({ 
           text: "Profile saved locally. Sign in with this email to sync to the cloud.", 
           type: "success" 
@@ -166,7 +165,7 @@ export default function UserProfile() {
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
-  // Main profile display
+  // UI
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 font-[family-name:var(--font-geist-mono)]">
       <div className="max-w-3xl mx-auto">
@@ -189,7 +188,7 @@ export default function UserProfile() {
           </div>
 
           <div className="space-y-6 max-w-xl mx-auto">
-            {/* Email section completely removed */}
+            {/* Email section removed */}
 
             {/* Name input */}
             <div>
