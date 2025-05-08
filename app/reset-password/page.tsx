@@ -14,10 +14,10 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if we have a reset token in the URL
+    // Look for reset token
     const checkForResetToken = async () => {
       try {
-        // Get the hash from the URL (Supabase puts the token after the #)
+        // Get hash from URL
         const hash = window.location.hash;
         
         if (hash && hash.includes('type=recovery')) {
@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      // Update the user's password
+      // Change password
       const { error } = await supabase.auth.updateUser({ 
         password: newPassword 
       });
@@ -70,12 +70,11 @@ export default function ResetPasswordPage() {
       } else {
         setStatus('Password updated successfully! Redirecting to login...');
         
-        // Sign out the user to clear any existing session
+        // Sign out user
         await supabase.auth.signOut();
         
-        // Redirect to login page after a delay
+        // Go to login
         setTimeout(() => {
-          // Use window.location for a hard refresh to ensure clean state
           window.location.href = '/login';
         }, 2000);
       }
@@ -91,10 +90,10 @@ export default function ResetPasswordPage() {
     }
   };
 
-  // Prevent navigation away from this page during password reset
+  // Keep user on page during reset
   useEffect(() => {
     if (hasResetToken) {
-      // Warn user if they try to leave the page
+      // Show warning if leaving
       const handleBeforeUnload = (e: BeforeUnloadEvent) => {
         const message = 'You need to complete your password reset before leaving this page.';
         e.preventDefault();

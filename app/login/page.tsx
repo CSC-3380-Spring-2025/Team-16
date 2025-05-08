@@ -16,70 +16,51 @@ export default function Page() {
   const { signIn, signUp, resetPassword, user, isLoading } = useAuth();
   const router = useRouter();
   
-  // If user is already authenticated, redirect to dashboard
+  // Redirect if already logged in
   useEffect(() => {
-    // Only run this on the client side
     if (typeof window === 'undefined') return;
     
-    // Don't redirect if we're on the login page with a redirect parameter
-    // This prevents redirect loops
+    // Don't redirect if there's a redirect link
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('redirect')) {
-      return;
-    }
+    if (urlParams.has('redirect')) return;
     
-    // Create a flag to track if we're already redirecting
     let mounted = true;
-    let redirectInProgress = false;
+    let redirecting = false;
     
-    const checkAuthAndRedirect = async () => {
-      // Don't proceed if component is unmounted or redirect is in progress
-      if (!mounted || redirectInProgress) return;
+    const checkAuth = async () => {
+      if (!mounted || redirecting) return;
       
       try {        
-        // Check auth state directly with Supabase
         const { data } = await supabase.auth.getSession();
         const currentUser = data.session?.user;
         
-        if (currentUser && mounted && !redirectInProgress) {
-          console.log('Login page: User is already authenticated, redirecting to dashboard');
-          redirectInProgress = true;
+        if (currentUser && mounted && !redirecting) {
+          console.log('User authenticated, redirecting');
+          redirecting = true;
           
-          // Use Next.js router for client-side navigation with a small delay
           setTimeout(() => {
-            if (mounted) {
-              router.push('/dashboard');
-            }
+            if (mounted) router.push('/dashboard');
           }, 100);
         }
       } catch (error) {
-        console.error('Error checking auth state in login page:', error);
+        console.log('Auth check error:', error);
       }
     };
     
-    // Check if user is authenticated from context
     if (!isLoading) {
-      if (user && !redirectInProgress) {
-        // User is authenticated according to context
-        console.log('Login page: User authenticated from context, redirecting to dashboard');
-        redirectInProgress = true;
+      if (user && !redirecting) {
+        console.log('User found in context');
+        redirecting = true;
         
-        // Use setTimeout to avoid immediate redirect that might cause issues
         setTimeout(() => {
-          if (mounted) {
-            router.push('/dashboard');
-          }
+          if (mounted) router.push('/dashboard');
         }, 100);
-      } else if (!redirectInProgress) {
-        // No user in context, check with Supabase directly
-        checkAuthAndRedirect();
+      } else if (!redirecting) {
+        checkAuth();
       }
     }
     
-    // Cleanup function to prevent state updates after unmount
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [isLoading, user, router]);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -87,7 +68,7 @@ export default function Page() {
     setStatus(null);
     setLoading(true);
 
-    // Validate email format
+    // Check if email looks right
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setStatus('Please enter a valid email address');
@@ -118,7 +99,7 @@ export default function Page() {
       return;
     }
 
-    // Validate password length for login/signup
+    // Check if password is long enough
     if (password.length < 6) {
       setStatus('Password must be at least 6 characters long');
       setLoading(false);
@@ -136,43 +117,30 @@ export default function Page() {
           
           if (error) {
             setStatus(`Error: ${error.message}`);
-            // Clear password on error
+            // Clears password when there's an error
             setPassword('');
             setConfirmPassword('');
             setLoading(false);
           } else {
-            // Show success message and redirect to dashboard
             setStatus('Account created successfully! Redirecting...');
-            
-            // Store authentication state in localStorage
             localStorage.setItem('isAuthenticated', 'true');
-            
-            // Force immediate navigation to dashboard
             window.location.href = '/dashboard';
           }
         }
       } else {
-        // Validate password
         if (!password) {
           setStatus('Password is required');
           setLoading(false);
         } else {
-          // Sign in with email and password
           const { error } = await signIn(email, password);
           
           if (error) {
             setStatus(`Error: ${error.message}`);
-            // Clear password on error
             setPassword('');
             setLoading(false);
           } else {
-            // Show success message
             setStatus('Sign in successful! Redirecting...');
-            
-            // Store authentication state in localStorage
             localStorage.setItem('isAuthenticated', 'true');
-            
-            // Force immediate navigation to dashboard
             window.location.href = '/dashboard';
           }
         }
@@ -184,7 +152,6 @@ export default function Page() {
       } else {
         setStatus('An unknown error occurred. Please try again.');
       }
-      // Clear password fields on any error
       setPassword('');
       if (isSignUp) {
         setConfirmPassword('');
