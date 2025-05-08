@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import "@/app/global/styles/globals.css";
@@ -61,6 +61,9 @@ function DashboardContent(): JSX.Element {
   const [completedCourses, setCompletedCourses] = useState<string[]>([]);
   const [rawTranscriptData, setRawTranscriptData] = useState<any[]>([]);
   const [totalCreditHours, setTotalCreditHours] = useState<number>(0);
+  const [major, setMajor] = useState("");
+  const [minor, setMinor] = useState("");
+
   
   // Use the auth hook
   const { isAuthenticated, hasLocalProfile, isChecking } = useAuthCheck('/login', false);
@@ -89,8 +92,13 @@ function DashboardContent(): JSX.Element {
             .select("*")
             .eq("user_id", user.id)
             .single();
+        
           setProfile(data);
+          setMajor(data?.major || "");
+          setMinor(data?.minor || "");
         }
+        
+        
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -184,15 +192,26 @@ function DashboardContent(): JSX.Element {
 
   const fetchAltMajors = async () => {
     try {
+      const allCourses = completedCourses.map(course => ({ course }));
+  
       const response = await fetch("/api/dashboard", {
-        method: "POST"
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          major,
+          minor,
+          credits: allCourses,
+        }),
       });
+  
       if (!response.ok) throw new Error("Response not OK");
+  
       const data: AltMajorResult = await response.json();
       setAltMajors(data.majors);
       setAltMinor(data.minor);
       setShowAltMajor(true);
     } catch (err) {
+      console.error("Failed to load alternative major suggestions:", err);
       alert("Failed to load alternative major suggestions.");
     }
   };
@@ -342,7 +361,7 @@ function DashboardContent(): JSX.Element {
             </div>
             {showAltMajor && (
               <div className="text-sm">
-                <p className="font-bold">Top 3 Majors:</p>
+                <p className="font-bold">Top 4 Majors:</p>
                 <ul className="list-disc list-inside">
                   {altMajors.map((major, i) => (
                     <li key={i}>{major}</li>
