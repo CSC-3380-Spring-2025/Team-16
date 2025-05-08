@@ -7,8 +7,12 @@ from pathlib import Path
 def loadUserCourses(path):
     with open(path, "r") as f:
         data = json.load(f)
-    return set(data.get("completedCourses", [])), data.get("credits", 0), data.get("major", ""), data.get("minor", "")
-
+    courses = set()
+    for entry in data.get("credits", []):
+        course = entry.get("course")
+        if course:
+            courses.add(course.strip())
+    return courses
 
 def extractCoursesFromMajor(credit_field):
     try:
@@ -40,11 +44,12 @@ def main():
     user_file = Path(sys.argv[1])
     degree_file = Path(sys.argv[2])
 
-    user_courses, credit_count, user_major, user_minor = loadUserCourses(user_file)
+    user_courses = loadUserCourses(user_file)
     df = pd.read_csv(degree_file)
 
     degree_match_scores = {}
     minor_scores = []
+    seen_base_majors = set()
 
     for _, row in df.iterrows():
         degree_type = str(row["type"]).strip().lower()
@@ -62,13 +67,16 @@ def main():
         match_count = len(set(required) & user_courses)
 
         if degree_type == "major":
-            base_key = degree.lower().strip()
+            base_key = getBaseDegreeLabel(degree)
+            if base_key in seen_base_majors:
+                continue
             if base_key not in degree_match_scores or match_count > degree_match_scores[base_key][1]:
                 degree_match_scores[base_key] = (display_name, match_count)
+                seen_base_majors.add(base_key)
         else:
             minor_scores.append((display_name, match_count))
 
-    top_majors = sorted(degree_match_scores.values(), key=lambda x: x[1], reverse=True)[:3]
+    top_majors = sorted(degree_match_scores.values(), key=lambda x: x[1], reverse=True)[:4]
     top_minor = sorted(minor_scores, key=lambda x: x[1], reverse=True)[:1]
 
     print("Majors:", ", ".join(m[0] for m in top_majors))

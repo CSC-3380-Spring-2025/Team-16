@@ -192,29 +192,29 @@ function DashboardContent(): JSX.Element {
 
   const fetchAltMajors = async () => {
     try {
+      const allCourses = completedCourses.map(course => ({ course }));
+  
       const response = await fetch("/api/dashboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           major,
           minor,
-          credits: getCreditHours()
-        })
+          credits: allCourses,
+        }),
       });
   
       if (!response.ok) throw new Error("Response not OK");
+  
       const data: AltMajorResult = await response.json();
       setAltMajors(data.majors);
       setAltMinor(data.minor);
       setShowAltMajor(true);
     } catch (err) {
+      console.error("Failed to load alternative major suggestions:", err);
       alert("Failed to load alternative major suggestions.");
     }
   };
-  
-  
-  
-  
 
   // Filter suggestions by search
   const filteredSuggestions = courseSuggestions.filter(suggestion =>
