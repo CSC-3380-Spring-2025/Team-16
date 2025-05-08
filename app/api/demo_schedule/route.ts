@@ -3,7 +3,7 @@ import path from 'path';
 import { exec } from 'child_process';
 
 export async function POST(req: NextRequest) {
-  const scriptPath = path.join(process.cwd(), 'api', 'scheduling', 'generate_schedule.py');
+  const scriptPath = path.join(process.cwd(), 'api', 'scheduling', 'simple_schedule.py');
   const command = `python "${scriptPath}"`;
 
   return new Promise((resolve) => {
