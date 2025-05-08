@@ -3,7 +3,7 @@ import scrapy
 
 class WebSpider(scrapy.Spider):
     name = 'citation'
-
+    #Note - The general goal of this webscraper is to get more details on elective courses that have a citation attached to it. These courses typically aren't specified, (e.g. free electives, general education courses)
     start_urls = [
         'https://catalog.lsu.edu/content.php?catoid=29&navoid=2661'
     ]
@@ -231,11 +231,13 @@ class WebSpider(scrapy.Spider):
 
                         for i, start_index in enumerate(total_hours_indices):
                             # Start from the element after "Total Sem. Hrs."
+                            # Did this since I found out when doing inspect element that every course citation began with the leading total semester hours
                             section_start: int = start_index + 1
 
                             section_end: int = None
 
                             # Look for CRITICAL REQUIREMENTS first
+                            # Did this as every end of each semester's citations began with the leading "critical requirements" of the next term
                             for j in range(section_start, len(cleanedText)):
                                 if ("CRITICAL REQUIREMENTS" in cleanedText[j] or "Critical Requirements" in cleanedText[j]):
                                     section_end = j
@@ -260,6 +262,7 @@ class WebSpider(scrapy.Spider):
                             'Requirements': requirements
                         }
         else:
+            #This is for the case where a program doesn't have a specified concentration. Same inner workings as the above
             requirements: list = []
 
             contentDiv = response.xpath('//div[@class="acalog-core"]')
@@ -298,7 +301,7 @@ class WebSpider(scrapy.Spider):
                     'Concentration': None,
                     'Requirements': requirements
                 }
-
+    #Just a simple function that would help to clean up the names of the courses and cirriculum
     def clean_program_name(self, programName: str):
         if programName.startswith("Degrees programs/curriculums/majors:"):
             programName: str = programName.replace("Degrees programs/curriculums/majors:", "").strip()
