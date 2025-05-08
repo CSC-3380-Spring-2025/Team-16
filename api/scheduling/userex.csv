@@ -1,4 +1,4 @@
 id;name;email;curriculum;credit
 123456;Thar;thtoo@lsu.edu;CSCCYB;"{""Completed"":[""MATH 1550"", ""ENGL 1001"", ""CSC 1350"", ""BIOL 1201""], ""IP"":[]}"
 234567;Colton;ccomis@lsu.edu;ACCT;"{""Completed"":[""ECON 2000"", ""ENGL 1001"", ""MATH 1021"", ""HNRS 2000"", ""HIST 2055""], ""IP"":[""ACCT 2001""]}"
-345678;Carson;cbou@lsu.edu;CSCSOF;"{""Completed"":[""ACCT 4225"", ""ACCT 4221"", ""ACCT 4121""], ""IP"":[""ACCT 4234""]}"
+345678;Carson;cbou@lsu.edu;MPHYS;"{""Completed"":[""ACCT 4225"", ""ACCT 4221"", ""ACCT 4121""], ""IP"":[""ACCT 4234""]}"
