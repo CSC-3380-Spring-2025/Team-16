@@ -28,8 +28,7 @@ const YearSelector = ({ selectedYear, onSelect }: { selectedYear: string; onSele
       <button
         key={year}
         onClick={() => onSelect(year)}
-        className={`px-4 py-2 rounded-full text-sm font-semibold font-mono ${
-
+        className={`px-4 py-2 rounded-full text-sm font-semibold ${
           selectedYear === year
             ? "bg-blue-600 text-white"
             : "bg-white border border-blue-400 text-blue-600"
@@ -41,56 +40,25 @@ const YearSelector = ({ selectedYear, onSelect }: { selectedYear: string; onSele
   </div>
 );
 
-const SemesterCard = ({
-  semester,
-  onCourseClick,
-  onCourseRemove,
-  isEditable,
-}: {
-  semester: Semester;
-  onCourseClick: (course: Course) => void;
-  onCourseRemove?: (courseIndex: number, term: string) => void;
-  isEditable?: boolean;
-}) => (
+const SemesterCard = ({ semester, onCourseClick }: { semester: Semester; onCourseClick: (course: Course) => void }) => (
   <div className="bg-white rounded-lg shadow-md p-4">
-
-    <h2 className="text-lg font-semibold font-mono mb-4 text-center ">{semester.term}</h2>
-
+    <h2 className="text-lg font-semibold mb-4 text-center">{semester.term}</h2>
     <div className="space-y-2">
       {semester.courses.map((course, i) => (
         <div
           key={i}
-
           onClick={() => onCourseClick(course)}
-
-          className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200 font-mono"
-
+          className="cursor-pointer hover:bg-blue-50 transition rounded p-2 border border-blue-200"
         >
-          <div
-            onClick={() => onCourseClick(course)}
-            className="cursor-pointer flex-1"
-          >
-            <strong>{course.code}</strong> - {course.credits} credits
-          </div>
-          {isEditable && (
-            <button
-              onClick={() => onCourseRemove?.(i, semester.term)}
-              className="ml-4 text-red-600 hover:underline font-bold"
-            >
-              ✕
-            </button>
-          )}
+          <strong>{course.code}</strong> - {course.credits} credits
         </div>
       ))}
     </div>
-
-    <div className="mt-4 text-center text-sm font-bold font-mono text-gray-700">
-
+    <div className="mt-4 text-center text-sm font-medium text-gray-700">
       Total: {semester.courses.reduce((sum, c) => sum + c.credits, 0)} Hours
     </div>
   </div>
 );
-
 
 const RecommendedCard = ({ course, selected, toggle }: { course: RecommendedCourse; selected: boolean; toggle: () => void }) => (
   <div
@@ -139,11 +107,6 @@ function SchedulePage() {
       const scheduleJson = await scheduleRes.json();
       //const recommendedJson = await recommendedRes.json();
 
-      if (!scheduleJson.schedule || typeof scheduleJson.schedule !== "object") {
-        console.error("Invalid schedule data", scheduleJson);
-        return;
-      }
-
       const scheduleArray: Semester[] = Object.entries(scheduleJson.schedule).map(
         ([term, courseCodes]) => ({
           term,
@@ -159,12 +122,6 @@ function SchedulePage() {
 
       console.log("Schedule API response:", scheduleJson);
       setScheduleData(scheduleArray);
-
-      if (scheduleArray.length > 0) {
-        const firstYear = scheduleArray[0].term.match(/\d{4}/)?.[0];
-        if (firstYear) setSelectedYear(firstYear);
-      }
-
       //setRecommendations(recommendedJson);
     };
     fetchData();
@@ -176,31 +133,13 @@ function SchedulePage() {
     );
   };
 
-
-  const removeCourse = (courseIndex: number, term: string) => {
-  setScheduleData((prev) =>
-    prev.map((sem) =>
-      sem.term === term
-        ? {
-            ...sem,
-            courses: sem.courses.filter((_, i) => i !== courseIndex),
-          }
-        : sem
-    )
-  );
-};
-
-
- const filteredSchedule = scheduleData.filter((s) => s.term.includes(selectedYear));
-
+  const filteredSchedule = scheduleData//.filter((s) => s.term.includes(selectedYear));
 
   return (
     <div className="min-h-screen bg-gray-100 text-black p-6">
       <div className="flex justify-center gap-4 mb-8">
         <button
-
           className={`px-6 py-2 rounded-full font-semibold ${
-
             view === "schedule" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
           }`}
           onClick={() => setView("schedule")}
@@ -208,9 +147,7 @@ function SchedulePage() {
           My Schedule
         </button>
         <button
-
           className={`px-6 py-2 rounded-full font-semibold ${
-
             view === "recommended" ? "bg-blue-600 text-white" : "bg-white border text-blue-600"
           }`}
           onClick={() => setView("recommended")}
@@ -221,28 +158,17 @@ function SchedulePage() {
 
       {view === "schedule" ? (
         <>
-
-          <h1 className="text-3xl font-bold font-mono text-center mb-6">Schedule for {selectedYear}</h1>
-
+          <h1 className="text-3xl font-bold text-center mb-6">Schedule for {selectedYear}</h1>
           <YearSelector selectedYear={selectedYear} onSelect={setSelectedYear} />
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSchedule.map((semester, index) => (
-              <SemesterCard
-                key={index}
-                semester={semester}
-                onCourseClick={setActiveCourse}
-                onCourseRemove={removeCourse}
-                isEditable={parseInt(semester.term) >= 2025}
-              />
+              <SemesterCard key={index} semester={semester} onCourseClick={setActiveCourse} />
             ))}
-
           </div>
         </>
       ) : (
         <>
-
-          <h1 className="text-3xl font-bold font-mono mb-6 text-center">Recommended Next Classes</h1>
-
+          <h1 className="text-3xl font-bold mb-6 text-center">Recommended Next Classes</h1>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recommendations.map((course) => (
               <RecommendedCard
