@@ -103,6 +103,7 @@ export default function UploadPage() {
             .eq("email", email)
             .single();
 
+
           if (fetchError && fetchError.code !== "PGRST116") {
             console.error("Error fetching profile:", fetchError);
             alert('Transcript data parsed successfully, but there was an error saving your data: ' + fetchError.message);
@@ -158,6 +159,7 @@ export default function UploadPage() {
       setLoading(false);
     }
   };
+
 
   const filteredCourses = courseCatalog.filter((course) =>
     (course.dept + ' ' + course.code).toLowerCase().includes(searchTerm.toLowerCase())
@@ -224,9 +226,23 @@ export default function UploadPage() {
       return `Semester ${semesterNumber}:[${courses.join(', ')}]`;
     });
     
+
+    // Find in-progress courses
+    let inProgressCourses: string[] = [];
+    
+    if (activeTab === 'upload') {
+      // For uploaded transcript, extract courses with IP grade
+      const uploadData = entries as TranscriptRow[];
+      inProgressCourses = uploadData
+        .filter(row => row.GR === 'IP' || row.CARR === 'IP')
+        .map(row => `${row.DEPT} ${row.CRSE}`);
+    }
+    
     return {
       Completed: completedSemesters,
-      IP: []
+      IP: inProgressCourses,
+      _rawData: activeTab === 'upload' ? entries : []
+
     };
   };
 
@@ -313,13 +329,17 @@ export default function UploadPage() {
         {/* Tabs */}
         <div className="flex border-b w-full justify-center gap-6">
           <button
-            className={`pb-2 px-4 font-medium ${activeTab === 'upload' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+
+            className={`pb-2 px-4 font-medium font-mono ${activeTab === 'upload' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+
             onClick={() => setActiveTab('upload')}
           >
             Upload Transcript
           </button>
           <button
-            className={`pb-2 px-4 font-medium ${activeTab === 'manual' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+
+            className={`pb-2 px-4 font-medium font-mono ${activeTab === 'manual' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+
             onClick={() => setActiveTab('manual')}
           >
             Manual Entry
@@ -328,7 +348,9 @@ export default function UploadPage() {
 
         {/* Upload Transcript */}
         {activeTab === 'upload' && (
-          <div className="w-full text-center">
+
+          <div className="w-full text-center font-mono">
+
             <p>Upload Your PDF:</p>
             <input type="file" onChange={handleFileChange} className="mb-4 p-2 border border-gray-300 rounded-md" />
             <button onClick={handleFileUpload} className="p-2 bg-blue-500 text-white rounded-md" disabled={loading}>
@@ -337,7 +359,9 @@ export default function UploadPage() {
             {error && <p className="text-red-500 mt-2">{error}</p>}
             {jsonData && (
               <div className="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 w-full overflow-x-auto">
-                <h2 className="text-xl font-semibold mb-4 text-center">Transcript Data</h2>
+
+                <h2 className="text-xl font-semibold font-mono mb-4 text-center">Transcript Data</h2>
+
                 <table className="table-auto w-full border-collapse text-sm">
                   <thead>
                     <tr>
@@ -374,10 +398,12 @@ export default function UploadPage() {
         {/* Manual Entry Tab */}
         {activeTab === 'manual' && (
           <div className="w-full text-center mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Manual Transcript Entry</h2>
+            
+            <h2 className="text-2xl font-semibold font-mono mb-4">Manual Transcript Entry</h2>
             {!selectedCourse && (
               <>
-                <input className="p-2 border rounded w-full max-w-lg mb-4" placeholder="Search for a class (e.g. ACCT)" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <input className="p-2 border rounded w-full max-w-lg mb-4 font-mono" placeholder="Search for a class (e.g. ACCT)" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+
                 {searchTerm && (
                   <div className="w-full max-w-lg text-left bg-white border rounded shadow-md p-4 mb-4 max-h-60 overflow-y-auto">
                     {filteredCourses.length > 0 ? (
@@ -387,7 +413,9 @@ export default function UploadPage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-gray-500">No matches found.</p>
+
+                      <p className="text-sm text-gray-500 font-mono">No matches found.</p>
+
                     )}
                   </div>
                 )}
@@ -395,7 +423,9 @@ export default function UploadPage() {
             )}
             {selectedCourse && (
               <div className="flex flex-col items-center gap-4 mb-6">
-                <p className="text-lg font-medium">{selectedCourse.dept} {selectedCourse.code} - {selectedCourse.title} ({selectedCourse.credits} credits)</p>
+
+                <p className="text-lg font-medium font-mono">{selectedCourse.dept} {selectedCourse.code} - {selectedCourse.title} ({selectedCourse.credits} credits)</p>
+
                 <input className="p-2 border rounded" placeholder="Grade (e.g. A)" value={grade} onChange={(e) => setGrade(e.target.value)} />
                 <select className="p-2 border rounded" value={semester} onChange={(e) => setSemester(e.target.value)}>
                   <option value="">Select Semester</option>

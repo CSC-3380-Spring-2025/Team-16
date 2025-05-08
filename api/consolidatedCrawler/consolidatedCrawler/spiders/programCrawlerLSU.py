@@ -13,6 +13,8 @@ class WebSpider(scrapy.Spider):
         'FEED_EXPORT_FIELDS': ['ID', 'Program', 'degree', 'type', 'concentration', 'credit', 'hours', 'restrictions']
     }
 
+    #Note - The goal of this scraper was to get information on each and every single program, list their concentrations and semesters, and output a csv that holds such complex data types. Pain in the butt to make, but honestly, probably one of my proudest work. lol
+
     def __init__(self, *args, **kwargs):
         super(WebSpider, self).__init__(*args, **kwargs)
         self.counter:int = 0  # Initialize the counter to 0
@@ -25,7 +27,7 @@ class WebSpider(scrapy.Spider):
 
     def parse_program(self, response):
         Hours:int = 120  # default credit hours
-        type:str = 'Major' #default type
+        type:str = 'Major' #default program type
         concentrationsList: dict = {
             "Agricultural Leadership and Development": "ALAD",
             "Teaching in Formal Education": "TFE",
@@ -274,7 +276,7 @@ class WebSpider(scrapy.Spider):
                                 course:str = li.xpath('.//text()').get()
                                 sup:str = li.xpath('.//sup/text()').get()
                                 if sup:
-                                    course:str = course + '['+sup+']'
+                                    course:str = course + '['+sup+']' #This would help the algorithm find the specific citation, alongside the program name, which is already given, allowing for cross-referencing with two datasets
                                 if course:
                                     course = self.clean_course_name(course)
                                     parts:list = course.split(" ")
@@ -284,7 +286,7 @@ class WebSpider(scrapy.Spider):
                                 else:
                                     nestedCourses = li.xpath('.//li//text()').getall()
                                     if nestedCourses:
-                                        courses.extend([c.strip() for c in nestedCourses if c.strip()])
+                                        courses.extend([c.strip() for c in nestedCourses if c.strip()]) #The reason for this existing is that for some super esoteric programs, the courses for some reason are nested within one another, making standardized scraping across all platforms a pain.
                         if "" in courses:
                             emptyIndex = courses.index("")
                             courses = courses[emptyIndex + 1:]
@@ -417,7 +419,7 @@ class WebSpider(scrapy.Spider):
                 'hours': Hours,
                 'restrictions': None,
             }
-
+    # methods below are pretty standard name-cleaning stuff: for courses, program name, and some descriptions
     def clean_program_name(self, program_name):
         if program_name.startswith("Degrees programs/curriculums/majors:"):
             program_name = program_name.replace("Degrees programs/curriculums/majors:", "").strip()

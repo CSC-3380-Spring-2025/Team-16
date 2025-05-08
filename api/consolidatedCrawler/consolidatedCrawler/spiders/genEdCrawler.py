@@ -3,7 +3,7 @@ import scrapy
 
 class WebSpider(scrapy.Spider):
     name:str = 'gened'
-
+    #Note - The goal of this webcrawler is to get each and every single LSU gen ed course, and output it into a csv for algorithm parsing
     start_urls = [
         'https://catalog.lsu.edu/preview_program.php?catoid=29&poid=12725',
         'https://catalog.lsu.edu/preview_program.php?catoid=29&poid=12726',
@@ -34,6 +34,7 @@ class WebSpider(scrapy.Spider):
                 GeneralEd:str = GeneralEd.strip()
                 parts = GeneralEd.split(' ')
                 # Ensure the split produces enough parts
+                # This was done so that I could easily get the course code and course ID
                 GeneralEdID:str = parts[0] if len(parts) > 0 else None
                 GeneralEdCodeChar:str = parts[1] if len(parts) > 1 else None
                 creditHoursChar:str = GeneralEd[-2] if len(GeneralEd) >= 2 else None
